@@ -7,7 +7,6 @@ import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
 import com.github.derrop.cloudnettransformer.json.JsonDocument;
 import com.google.gson.JsonElement;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -25,9 +24,66 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
-        // TODO
+    public boolean write(CloudSystem cloudSystem, Path directory) {
+
+        SignConfiguration signConfiguration = cloudSystem.getSignConfiguration();
+        if (signConfiguration == null || signConfiguration.getConfigurations().isEmpty()) {
+            return false;
+        }
+
+        JsonDocument config = JsonDocument.newDocument();
+
+        GroupSignConfiguration mainSignConfiguration = signConfiguration.getConfigurations().iterator().next();
+        config
+                .append("fullServerHide", mainSignConfiguration.isHideFullServers())
+                .append("knockbackOnSmallDistance", mainSignConfiguration.getKnockbackDistance() != 0 && mainSignConfiguration.getKnockbackStrength() != 0)
+                .append("distance", mainSignConfiguration.getKnockbackDistance())
+                .append("strength", mainSignConfiguration.getKnockbackStrength());
+
+        Collection<JsonDocument> groupLayouts = new ArrayList<>();
+        for (GroupSignConfiguration configuration : signConfiguration.getConfigurations()) {
+            groupLayouts.add(this.asJson("default", configuration.getGlobalLayout()));
+            for (TaskSignLayout taskLayout : configuration.getTaskLayouts()) {
+                groupLayouts.add(this.asJson(taskLayout.getTask(), taskLayout));
+            }
+        }
+        config.append("groupLayouts", groupLayouts);
+
+        SignLayout[] searchLayouts = mainSignConfiguration.getSearchLayout().getSignLayouts().toArray(new SignLayout[0]);
+        JsonDocument[] searchLayoutJson = new JsonDocument[searchLayouts.length];
+        for (int i = 0; i < searchLayouts.length; i++) {
+            searchLayoutJson[i] = this.asJson("loading" + (i + 1), searchLayouts[i]);
+        }
+        config.append("searchingAnimation",
+                JsonDocument.newDocument()
+                        .append("animations", mainSignConfiguration.getSearchLayout().getSignLayouts().size())
+                        .append("animationsPerSecond", mainSignConfiguration.getSearchLayout().getAnimationsPerSecond())
+                        .append("searchingLayouts", searchLayoutJson)
+        );
+
+        JsonDocument.newDocument("layout_config", config).write(this.config(directory));
+
         return true;
+    }
+
+    private JsonDocument asJson(String name, TaskSignLayout layout) {
+        return JsonDocument.newDocument()
+                .append("name", name)
+                .append("layouts", Arrays.asList(
+                        this.asJson("empty", layout.getEmptyLayout()),
+                        this.asJson("online", layout.getOnlineLayout()),
+                        this.asJson("full", layout.getFullLayout()),
+                        this.asJson("maintenance", layout.getMaintenanceLayout())
+                ));
+    }
+
+    private JsonDocument asJson(String type, SignLayout layout) {
+        return JsonDocument.newDocument()
+                .append("name", type)
+                .append("signLayout", layout == null ? new String[]{"", "", "", ""} : layout.getLines())
+                .append("blockId", 0)
+                .append("blockName", layout == null ? "STONE" : layout.getBlockType())
+                .append("subId", layout == null ? 0 : layout.getSubId());
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.Collection;
 public class GroupSignConfiguration {
 
     private final String targetGroup;
-    private final boolean switchToSearchingWhenFull;
+    private final boolean hideFullServers;
     private final double knockbackDistance;
     private final double knockbackStrength;
     private final Collection<TaskSignLayout> taskLayouts;
@@ -13,12 +13,12 @@ public class GroupSignConfiguration {
     private final AnimatedSignLayout searchLayout;
     private final AnimatedSignLayout startingLayout;
 
-    public GroupSignConfiguration(String targetGroup, boolean switchToSearchingWhenFull,
+    public GroupSignConfiguration(String targetGroup, boolean hideFullServers,
                                   double knockbackDistance, double knockbackStrength,
                                   Collection<TaskSignLayout> taskLayouts, TaskSignLayout globalLayout,
                                   AnimatedSignLayout searchLayout, AnimatedSignLayout startingLayout) {
         this.targetGroup = targetGroup;
-        this.switchToSearchingWhenFull = switchToSearchingWhenFull;
+        this.hideFullServers = hideFullServers;
         this.knockbackDistance = knockbackDistance;
         this.knockbackStrength = knockbackStrength;
         this.taskLayouts = taskLayouts;
@@ -31,8 +31,8 @@ public class GroupSignConfiguration {
         return this.targetGroup;
     }
 
-    public boolean isSwitchToSearchingWhenFull() {
-        return this.switchToSearchingWhenFull;
+    public boolean isHideFullServers() {
+        return this.hideFullServers;
     }
 
     public double getKnockbackDistance() {

@@ -30,6 +30,13 @@ public class CloudTransformer {
         }
     }
 
+    public void transform(Path sourceDirectory, CloudType sourceType, CloudType targetType) throws IOException {
+        Path targetDirectory = Paths.get(targetType.getName().replace(' ', '_'));
+        Files.createDirectories(targetDirectory);
+
+        this.transform(sourceDirectory, targetDirectory, sourceType, targetType);
+    }
+
     public void transform(Path sourceDirectory, Path targetDirectory, CloudType sourceType, CloudType targetType) throws IOException {
         System.out.println("Transforming " + sourceType.getName() + " (located at " + sourceDirectory.toAbsolutePath() + ") to " + targetType.getName() + " (located at " + targetDirectory.toAbsolutePath() + ")...");
 
@@ -83,17 +90,15 @@ public class CloudTransformer {
             }
         } while (directory == null);
 
-        Path targetDirectory = Paths.get(target.getName().replace(' ', '_'));
-        Files.createDirectories(targetDirectory);
-
-        this.transform(directory, targetDirectory, finalSource, finalTarget);
+        this.transform(directory, finalSource, finalTarget);
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         CloudTransformer transformer = new CloudTransformer(reader);
 
-        transformer.askConsole();
+        transformer.transform(Paths.get("D:\\Dev\\Tests\\CloudNet3"), CloudType.CLOUDNET_3, CloudType.CLOUDNET_2);
+        //transformer.askConsole();
     }
 
 }

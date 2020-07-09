@@ -728,10 +728,16 @@ public class JsonDocument {
     }
 
     public JsonDocument write(Path path) {
-        try (OutputStream stream = Files.newOutputStream(path)) {
-            return this.write(stream);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
+        Path parent = path.getParent();
+        try {
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            try (OutputStream stream = Files.newOutputStream(path)) {
+                return this.write(stream);
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
         return this;

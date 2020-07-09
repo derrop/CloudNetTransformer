@@ -39,7 +39,7 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
         Collection<JsonDocument> configurations = signConfiguration.getConfigurations().stream()
                 .map(configuration -> JsonDocument.newDocument()
                         .append("targetGroup", configuration.getTargetGroup())
-                        .append("switchToSearchingWhenServiceIsFull", configuration.isSwitchToSearchingWhenFull())
+                        .append("switchToSearchingWhenServiceIsFull", configuration.isHideFullServers())
                         .append("knockbackDistance", configuration.getKnockbackDistance())
                         .append("knockbackStrength", configuration.getKnockbackStrength())
                         .append("taskLayouts", configuration.getTaskLayouts())
@@ -111,7 +111,7 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
             ));
         }
 
-        Map<String, String> messages = document.get("messages", TypeToken.getParameterized(Map.class, String.class, String.class).getType());
+        Map<String, String> messages = config.get("messages", TypeToken.getParameterized(Map.class, String.class, String.class).getType());
         Map<SignMessage, String> outMessages = new HashMap<>(messages.size());
         outMessages.put(SignMessage.SERVER_CONNECTING, messages.get("server-connecting-message"));
         outMessages.put(SignMessage.SIGN_REMOVE_SUCCESS, messages.get("command-cloudsign-remove-success"));

@@ -23,9 +23,12 @@ public class MultiCloudWriter implements CloudWriter {
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
         for (CloudWriter writer : this.writers) {
+            System.out.println("Writing '" + writer.getName() + "'...");
             if (!writer.write(cloudSystem, directory)) {
+                System.err.println("Failed to write '" + writer.getName() + "'");
                 return false;
             }
+            System.out.println("Successfully wrote '" + writer.getName() + "'");
         }
         return true;
     }
