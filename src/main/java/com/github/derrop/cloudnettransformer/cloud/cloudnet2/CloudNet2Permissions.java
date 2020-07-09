@@ -17,6 +17,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 public class CloudNet2Permissions implements CloudWriter, CloudReader {
@@ -31,12 +33,60 @@ public class CloudNet2Permissions implements CloudWriter, CloudReader {
 
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) {
-        return false;
+
+        PermissionConfiguration permissionConfiguration = cloudSystem.getPermissionConfiguration();
+        if (permissionConfiguration == null) {
+            return false;
+        }
+
+
+        Map<String, Document> groups = new HashMap<>(permissionConfiguration.getGroups().size());
+
+        for (PermissionGroup group : permissionConfiguration.getGroups()) {
+            Document document = Documents.newDocument()
+                    .append("prefix", group.getPrefix())
+                    .append("suffix", group.getSuffix())
+                    .append("display", group.getDisplay())
+                    .append("color", group.getColor())
+                    .append("tagId", group.getSortId())
+                    .append("joinPower", 0)
+                    .append("defaultGroup", group.isDefaultGroup())
+                    .append("options", Documents.newDocument())
+                    .append("implements", group.getGroups());
+
+            Collection<String> permissions = new ArrayList<>();
+            Map<String, Collection<String>> groupPermissions = new HashMap<>();
+
+            for (Permission permission : group.getPermissions()) {
+                String permissionName = (permission.getPotency() < 0 ? "-" : "") + permission.getName();
+
+                if (permission.getTargetGroup() == null) {
+                    permissions.add(permissionName);
+                    continue;
+                }
+
+                if (!groupPermissions.containsKey(permission.getTargetGroup())) {
+                    groupPermissions.put(permission.getTargetGroup(), new ArrayList<>());
+                }
+                groupPermissions.get(permission.getTargetGroup()).add(permissionName);
+            }
+
+            document.append("permissions", permissions).append("serverGroupPermissions", groupPermissions);
+
+            groups.put(group.getName(), document);
+        }
+
+        Document document = Documents.newDocument()
+                .append("enabled", permissionConfiguration.isEnabled())
+                .append("groups", groups);
+
+        Documents.jsonStorage().write(document, this.config(directory));
+
+        return true;
     }
 
     @Override
     public boolean read(CloudSystem cloudSystem, Path directory) {
-
         Path configPath = this.config(directory);
         if (!Files.exists(configPath)) {
             return false;

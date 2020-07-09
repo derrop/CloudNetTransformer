@@ -97,8 +97,7 @@ public class CloudTransformer {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         CloudTransformer transformer = new CloudTransformer(reader);
 
-        transformer.transform(Paths.get("D:\\Dev\\Tests\\CloudNet3"), CloudType.CLOUDNET_3, CloudType.CLOUDNET_2);
-        //transformer.askConsole();
+        transformer.askConsole();
     }
 
 }

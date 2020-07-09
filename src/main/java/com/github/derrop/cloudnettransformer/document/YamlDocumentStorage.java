@@ -27,18 +27,13 @@ public class YamlDocumentStorage implements DocumentStorage {
     @Override
     public Document read(Reader reader) {
         Map<String, Object> map = yaml.get().loadAs(reader, LinkedHashMap.class);
-        JsonElement element = this.asJson(map);
+        JsonElement element = DefaultDocument.GSON.toJsonTree(map);
         return new DefaultDocument(element);
     }
 
     @Override
     public void write(Document document, Writer writer) {
         yaml.get().dump(this.asObject(((DefaultDocument) document).jsonObject), writer);
-    }
-
-    @SuppressWarnings("unchecked")
-    private JsonElement asJson(Object object) {
-        return DefaultDocument.GSON.toJsonTree(object);
     }
 
     private Object asObject(JsonElement element) {

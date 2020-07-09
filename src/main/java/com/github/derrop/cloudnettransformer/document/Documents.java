@@ -1,8 +1,8 @@
 package com.github.derrop.cloudnettransformer.document;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
@@ -13,6 +13,10 @@ public class Documents {
 
     public static Document newDocument() {
         return new DefaultDocument();
+    }
+
+    public static Document newDocument(JsonElement jsonElement) {
+        return new DefaultDocument(jsonElement);
     }
 
     public static Document newDocument(JsonObject jsonObject) {
