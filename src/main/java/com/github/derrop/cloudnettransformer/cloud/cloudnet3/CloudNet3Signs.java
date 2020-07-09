@@ -4,7 +4,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.json.JsonDocument;
+import com.github.derrop.cloudnettransformer.document.Document;
+import com.github.derrop.cloudnettransformer.document.Documents;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
@@ -34,10 +35,10 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
 
         SignConfiguration signConfiguration = cloudSystem.getSignConfiguration();
 
-        JsonDocument document = JsonDocument.newDocument();
+        Document document = Documents.newDocument();
 
-        Collection<JsonDocument> configurations = signConfiguration.getConfigurations().stream()
-                .map(configuration -> JsonDocument.newDocument()
+        Collection<Document> configurations = signConfiguration.getConfigurations().stream()
+                .map(configuration -> Documents.newDocument()
                         .append("targetGroup", configuration.getTargetGroup())
                         .append("switchToSearchingWhenServiceIsFull", configuration.isHideFullServers())
                         .append("knockbackDistance", configuration.getKnockbackDistance())
@@ -60,7 +61,7 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
         messages.put("command-cloudsign-sign-already-exist", signConfiguration.getMessages().get(SignMessage.SIGN_ALREADY_EXISTS));
         document.append("messages", messages);
 
-        document.write(this.config(directory));
+        Documents.jsonStorage().write(document, this.config(directory));
 
         return true;
     }
@@ -72,12 +73,12 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
             return false;
         }
 
-        JsonDocument document = JsonDocument.newDocument(configPath);
+        Document document = Documents.newDocument(configPath);
         if (!document.contains("config")) {
             return false;
         }
 
-        JsonDocument config = document.getDocument("config");
+        Document config = document.getDocument("config");
         if (!config.contains("configurations")) {
             return false;
         }
@@ -85,7 +86,7 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
         Collection<GroupSignConfiguration> configurations = new ArrayList<>();
 
         for (JsonElement element : config.getJsonArray("configurations")) {
-            JsonDocument configuration = new JsonDocument(element.getAsJsonObject());
+            Document configuration = Documents.newDocument(element.getAsJsonObject());
 
             TaskSignLayout globalLayout = new TaskSignLayout(
                     null,

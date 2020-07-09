@@ -1,7 +1,7 @@
 package com.github.derrop.cloudnettransformer;
 
-import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.CloudType;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 
 import java.io.BufferedReader;
 import java.io.IOException;

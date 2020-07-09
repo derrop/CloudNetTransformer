@@ -1,32 +1,33 @@
-package com.github.derrop.cloudnettransformer.json;
+package com.github.derrop.cloudnettransformer.document;
 
 import com.google.gson.*;
 import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
-public class JsonDocument {
+public class DefaultDocument implements Document {
 
-    public static final TypeAdapter<JsonDocument> TYPE_ADAPTER = new TypeAdapter<JsonDocument>() {
+    public static final TypeAdapter<DefaultDocument> TYPE_ADAPTER = new TypeAdapter<DefaultDocument>() {
         @Override
-        public void write(JsonWriter jsonWriter, JsonDocument document) throws IOException {
+        public void write(JsonWriter jsonWriter, DefaultDocument document) throws IOException {
             TypeAdapters.JSON_ELEMENT.write(jsonWriter, document == null ? new JsonObject() : document.jsonObject);
         }
 
         @Override
-        public JsonDocument read(JsonReader jsonReader) throws IOException {
+        public DefaultDocument read(JsonReader jsonReader) throws IOException {
             JsonElement jsonElement = TypeAdapters.JSON_ELEMENT.read(jsonReader);
             if (jsonElement != null && jsonElement.isJsonObject()) {
-                return new JsonDocument(jsonElement);
+                return new DefaultDocument(jsonElement);
             } else {
                 return null;
             }
@@ -37,120 +38,65 @@ public class JsonDocument {
             .serializeNulls()
             .disableHtmlEscaping()
             .setPrettyPrinting()
-            .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(JsonDocument.class, TYPE_ADAPTER))
+            .registerTypeAdapterFactory(TypeAdapters.newTypeHierarchyFactory(DefaultDocument.class, TYPE_ADAPTER))
             .create();
 
     protected final JsonObject jsonObject;
 
-    public JsonDocument(JsonObject jsonObject) {
+    public DefaultDocument(JsonObject jsonObject) {
         this.jsonObject = jsonObject;
     }
 
-    public JsonDocument() {
+    public DefaultDocument() {
         this(new JsonObject());
     }
 
-    public JsonDocument(Object toObjectMirror) {
+    public DefaultDocument(Object toObjectMirror) {
         this(GSON.toJsonTree(toObjectMirror));
     }
 
-    public JsonDocument(JsonElement jsonElement) {
+    public DefaultDocument(JsonElement jsonElement) {
         this(jsonElement.isJsonObject() ? jsonElement.getAsJsonObject() : new JsonObject());
     }
 
-    public JsonDocument(Properties properties) {
+    public DefaultDocument(Properties properties) {
         this();
         this.append(properties);
     }
 
-    public JsonDocument(String key, String value) {
+    public DefaultDocument(String key, String value) {
         this();
         this.append(key, value);
     }
 
-    public JsonDocument(String key, Object value) {
+    public DefaultDocument(String key, Object value) {
         this();
         this.append(key, value);
     }
 
-    public JsonDocument(String key, Boolean value) {
+    public DefaultDocument(String key, Boolean value) {
         this();
         this.append(key, value);
     }
 
-    public JsonDocument(String key, Number value) {
+    public DefaultDocument(String key, Number value) {
         this();
         this.append(key, value);
     }
 
-    public JsonDocument(String key, Character value) {
+    public DefaultDocument(String key, Character value) {
         this();
         this.append(key, value);
     }
 
-    public JsonDocument(String key, JsonDocument value) {
+    public DefaultDocument(String key, DefaultDocument value) {
         this();
         this.append(key, value);
     }
 
-    public JsonDocument(String key, Properties value) {
+    public DefaultDocument(String key, Properties value) {
         this();
         this.append(key, value);
-    }
-
-
-    public static JsonDocument newDocument() {
-        return new JsonDocument();
-    }
-
-    public static JsonDocument newDocument(JsonObject jsonObject) {
-        return new JsonDocument(jsonObject);
-    }
-
-    public static JsonDocument newDocument(String key, String value) {
-        return new JsonDocument(key, value);
-    }
-
-    public static JsonDocument newDocument(String key, Number value) {
-        return new JsonDocument(key, value);
-    }
-
-    public static JsonDocument newDocument(String key, Character value) {
-        return new JsonDocument(key, value);
-    }
-
-    public static JsonDocument newDocument(String key, Boolean value) {
-        return new JsonDocument(key, value);
-    }
-
-    public static JsonDocument newDocument(String key, Object value) {
-        return new JsonDocument(key, value);
-    }
-
-    public static JsonDocument newDocument(byte[] bytes) {
-        return newDocument(new String(bytes, StandardCharsets.UTF_8));
-    }
-
-    public static JsonDocument newDocument(Object object) {
-        return new JsonDocument(GSON.toJsonTree(object));
-    }
-
-    public static JsonDocument newDocument(File file) {
-        if (file == null) {
-            return null;
-        }
-
-        return newDocument(file.toPath());
-    }
-
-    public static JsonDocument newDocument(Path path) {
-        JsonDocument document = new JsonDocument();
-        document.read(path.toFile());
-        return document;
-    }
-
-    public static JsonDocument newDocument(String input) {
-        return new JsonDocument().read(input);
     }
 
     public Collection<String> keys() {
@@ -167,7 +113,7 @@ public class JsonDocument {
         return this.jsonObject.size();
     }
     
-    public JsonDocument clear() {
+    public DefaultDocument clear() {
         for (Map.Entry<String, JsonElement> elementEntry : this.jsonObject.entrySet()) {
             this.jsonObject.remove(elementEntry.getKey());
         }
@@ -175,7 +121,7 @@ public class JsonDocument {
         return this;
     }
     
-    public JsonDocument remove(String key) {
+    public DefaultDocument remove(String key) {
         this.jsonObject.remove(key);
         return this;
     }
@@ -192,7 +138,7 @@ public class JsonDocument {
         return GSON.fromJson(jsonObject, type);
     }
     
-    public JsonDocument append(String key, Object value) {
+    public DefaultDocument append(String key, Object value) {
         if (key == null || value == null) {
             return this;
         }
@@ -201,7 +147,7 @@ public class JsonDocument {
         return this;
     }
     
-    public JsonDocument append(String key, Number value) {
+    public DefaultDocument append(String key, Number value) {
         if (key == null || value == null) {
             return this;
         }
@@ -210,7 +156,7 @@ public class JsonDocument {
         return this;
     }
     
-    public JsonDocument append(String key, Boolean value) {
+    public DefaultDocument append(String key, Boolean value) {
         if (key == null || value == null) {
             return this;
         }
@@ -219,7 +165,7 @@ public class JsonDocument {
         return this;
     }
     
-    public JsonDocument append(String key, String value) {
+    public DefaultDocument append(String key, String value) {
         if (key == null || value == null) {
             return this;
         }
@@ -228,7 +174,7 @@ public class JsonDocument {
         return this;
     }
 
-    public JsonDocument append(String key, Character value) {
+    public DefaultDocument append(String key, Character value) {
         if (key == null || value == null) {
             return this;
         }
@@ -237,24 +183,24 @@ public class JsonDocument {
         return this;
     }
 
-    public JsonDocument append(String key, JsonDocument value) {
+    public DefaultDocument append(String key, Document value) {
         if (key == null || value == null) {
             return this;
         }
 
-        this.jsonObject.add(key, value.jsonObject);
+        this.jsonObject.add(key, ((DefaultDocument) value).jsonObject);
         return this;
     }
 
-    public JsonDocument append(JsonDocument document) {
+    public DefaultDocument append(Document document) {
         if (document == null) {
             return this;
         } else {
-            return append(document.jsonObject);
+            return append(((DefaultDocument) document).jsonObject);
         }
     }
 
-    public JsonDocument append(JsonObject jsonObject) {
+    public DefaultDocument append(JsonObject jsonObject) {
         if (jsonObject == null) {
             return this;
         }
@@ -266,7 +212,7 @@ public class JsonDocument {
         return this;
     }
 
-    public JsonDocument append(Properties properties) {
+    public DefaultDocument append(Properties properties) {
         if (properties == null) {
             return this;
         }
@@ -281,11 +227,11 @@ public class JsonDocument {
         return this;
     }
 
-    public JsonDocument append(String key, Properties properties) {
-        return append(key, new JsonDocument(properties));
+    public DefaultDocument append(String key, Properties properties) {
+        return append(key, new DefaultDocument(properties));
     }
 
-    public JsonDocument append(String key, byte[] bytes) {
+    public DefaultDocument append(String key, byte[] bytes) {
         if (key == null || bytes == null) {
             return this;
         }
@@ -293,7 +239,7 @@ public class JsonDocument {
         return this.append(key, Base64.getEncoder().encodeToString(bytes));
     }
 
-    public JsonDocument append(Map<String, Object> map) {
+    public DefaultDocument append(Map<String, Object> map) {
         if (map == null) {
             return this;
         }
@@ -305,7 +251,7 @@ public class JsonDocument {
         return this;
     }
 
-    public JsonDocument append(InputStream inputStream) {
+    public DefaultDocument append(InputStream inputStream) {
         try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
             return append(reader);
         } catch (Exception exception) {
@@ -314,11 +260,11 @@ public class JsonDocument {
         return this;
     }
 
-    public JsonDocument append(Reader reader) {
+    public DefaultDocument append(Reader reader) {
         return append(JsonParser.parseReader(reader).getAsJsonObject());
     }
 
-    public JsonDocument getDocument(String key) {
+    public DefaultDocument getDocument(String key) {
         if (!contains(key)) {
             return null;
         }
@@ -326,7 +272,7 @@ public class JsonDocument {
         JsonElement jsonElement = this.jsonObject.get(key);
 
         if (jsonElement.isJsonObject()) {
-            return new JsonDocument(jsonElement);
+            return new DefaultDocument(jsonElement);
         } else {
             return null;
         }
@@ -633,7 +579,7 @@ public class JsonDocument {
         return this.getString(key);
     }
 
-    public JsonDocument getDocument(String key, JsonDocument def) {
+    public DefaultDocument getDocument(String key, Document def) {
         if (!this.contains(key)) {
             this.append(key, def);
         }
@@ -714,85 +660,6 @@ public class JsonDocument {
         return this.getChar(key);
     }
 
-    public JsonDocument write(OutputStream outputStream) {
-        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-            this.write(outputStreamWriter);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-        return this;
-    }
-
-    public JsonDocument write(File file) {
-        return write(file.toPath());
-    }
-
-    public JsonDocument write(Path path) {
-        Path parent = path.getParent();
-        try {
-            if (parent != null) {
-                Files.createDirectories(parent);
-            }
-            try (OutputStream stream = Files.newOutputStream(path)) {
-                return this.write(stream);
-            }
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-
-        return this;
-    }
-    
-    public JsonDocument write(Writer writer) {
-        GSON.toJson(this.jsonObject, writer);
-        return this;
-    }
-
-    public JsonDocument read(InputStream inputStream) {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-            return this.read(inputStreamReader);
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-        return this;
-    }
-
-    public JsonDocument read(Path path) {
-        try (InputStream stream = Files.newInputStream(path)) {
-            return read(stream);
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-            return this;
-        }
-    }
-
-    public JsonDocument read(File file) {
-        return read(file.toPath());
-    }
-    
-    public JsonDocument read(Reader reader) {
-        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
-            return this.append(JsonParser.parseReader(bufferedReader).getAsJsonObject());
-        } catch (Exception ex) {
-            ex.getStackTrace();
-        }
-        return this;
-    }
-
-    
-    public void read(byte[] bytes) {
-        this.append(JsonParser.parseString(new String(bytes, StandardCharsets.UTF_8)).getAsJsonObject());
-    }
-
-    public JsonDocument read(String input) {
-        try {
-            this.append(JsonParser.parseReader(new BufferedReader(new StringReader(input))).getAsJsonObject());
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-        return this;
-    }
-    
     public JsonObject toJsonObject() {
         return jsonObject;
     }

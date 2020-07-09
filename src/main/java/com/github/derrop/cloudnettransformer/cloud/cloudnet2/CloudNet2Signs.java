@@ -1,10 +1,13 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
 
+import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.json.JsonDocument;
+import com.github.derrop.cloudnettransformer.document.DefaultDocument;
+import com.github.derrop.cloudnettransformer.document.Document;
+import com.github.derrop.cloudnettransformer.document.Documents;
 import com.google.gson.JsonElement;
 
 import java.nio.file.Files;
@@ -20,7 +23,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
     }
 
     private Path config(Path directory) {
-        return directory.resolve("CloudNet-Master").resolve("local").resolve("signLayout.json");
+        return directory.resolve(Constants.MASTER_DIRECTORY).resolve("local").resolve("signLayout.json");
     }
 
     @Override
@@ -31,7 +34,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
             return false;
         }
 
-        JsonDocument config = JsonDocument.newDocument();
+        Document config = Documents.newDocument();
 
         GroupSignConfiguration mainSignConfiguration = signConfiguration.getConfigurations().iterator().next();
         config
@@ -40,7 +43,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
                 .append("distance", mainSignConfiguration.getKnockbackDistance())
                 .append("strength", mainSignConfiguration.getKnockbackStrength());
 
-        Collection<JsonDocument> groupLayouts = new ArrayList<>();
+        Collection<Document> groupLayouts = new ArrayList<>();
         for (GroupSignConfiguration configuration : signConfiguration.getConfigurations()) {
             groupLayouts.add(this.asJson("default", configuration.getGlobalLayout()));
             for (TaskSignLayout taskLayout : configuration.getTaskLayouts()) {
@@ -50,24 +53,24 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
         config.append("groupLayouts", groupLayouts);
 
         SignLayout[] searchLayouts = mainSignConfiguration.getSearchLayout().getSignLayouts().toArray(new SignLayout[0]);
-        JsonDocument[] searchLayoutJson = new JsonDocument[searchLayouts.length];
+        Document[] searchLayoutJson = new DefaultDocument[searchLayouts.length];
         for (int i = 0; i < searchLayouts.length; i++) {
             searchLayoutJson[i] = this.asJson("loading" + (i + 1), searchLayouts[i]);
         }
         config.append("searchingAnimation",
-                JsonDocument.newDocument()
+                Documents.newDocument()
                         .append("animations", mainSignConfiguration.getSearchLayout().getSignLayouts().size())
                         .append("animationsPerSecond", mainSignConfiguration.getSearchLayout().getAnimationsPerSecond())
                         .append("searchingLayouts", searchLayoutJson)
         );
 
-        JsonDocument.newDocument("layout_config", config).write(this.config(directory));
+        Documents.jsonStorage().write(Documents.newDocument("layout_config", config), this.config(directory));
 
         return true;
     }
 
-    private JsonDocument asJson(String name, TaskSignLayout layout) {
-        return JsonDocument.newDocument()
+    private Document asJson(String name, TaskSignLayout layout) {
+        return Documents.newDocument()
                 .append("name", name)
                 .append("layouts", Arrays.asList(
                         this.asJson("empty", layout.getEmptyLayout()),
@@ -77,8 +80,8 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
                 ));
     }
 
-    private JsonDocument asJson(String type, SignLayout layout) {
-        return JsonDocument.newDocument()
+    private Document asJson(String type, SignLayout layout) {
+        return Documents.newDocument()
                 .append("name", type)
                 .append("signLayout", layout == null ? new String[]{"", "", "", ""} : layout.getLines())
                 .append("blockId", 0)
@@ -94,7 +97,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
             return false;
         }
 
-        JsonDocument config = JsonDocument.newDocument(configPath).getDocument("layout_config");
+        Document config = Documents.newDocument(configPath).getDocument("layout_config");
         if (config == null) {
             return false;
         }
@@ -108,14 +111,14 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
         Collection<TaskSignLayout> layouts = new ArrayList<>();
 
         for (JsonElement element : config.getJsonArray("groupLayouts")) {
-            JsonDocument groupLayout = new JsonDocument(element);
+            DefaultDocument groupLayout = new DefaultDocument(element);
 
             SignLayout empty = null;
             SignLayout online = null;
             SignLayout full = null;
             SignLayout maintenance = null;
             for (JsonElement layout : groupLayout.getJsonArray("layouts")) {
-                JsonDocument layoutDoc = new JsonDocument(layout);
+                DefaultDocument layoutDoc = new DefaultDocument(layout);
                 switch (layoutDoc.getString("name")) {
                     case "empty":
                         empty = this.asSignLayout(layoutDoc);
@@ -146,7 +149,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
 
         AnimatedSignLayout searchLayout = new AnimatedSignLayout(
                 StreamSupport.stream(config.getDocument("searchingAnimation").getJsonArray("searchingLayouts").spliterator(), false)
-                        .map(JsonDocument::new)
+                        .map(DefaultDocument::new)
                         .map(this::asSignLayout)
                         .collect(Collectors.toList()),
                 config.getDocument("searchingAnimation").getInt("animationsPerSecond")
@@ -174,7 +177,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
         return true;
     }
 
-    private SignLayout asSignLayout(JsonDocument document) {
+    private SignLayout asSignLayout(DefaultDocument document) {
         return new SignLayout(
                 document.get("signLayout", String[].class),
                 document.getString("blockType") != null ? document.getString("blockType") : String.valueOf(document.getInt("blockId")),
