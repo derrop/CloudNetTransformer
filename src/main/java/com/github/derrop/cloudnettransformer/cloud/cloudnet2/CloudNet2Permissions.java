@@ -80,7 +80,7 @@ public class CloudNet2Permissions implements CloudWriter, CloudReader {
                 .append("enabled", permissionConfiguration.isEnabled())
                 .append("groups", groups);
 
-        Documents.jsonStorage().write(document, this.config(directory));
+        Documents.yamlStorage().write(document, this.config(directory));
 
         return true;
     }
