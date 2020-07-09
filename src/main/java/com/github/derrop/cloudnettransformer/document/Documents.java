@@ -39,20 +39,16 @@ public class Documents {
         return new DefaultDocument(key, value);
     }
 
-    public static Document newDocument(byte[] bytes) {
-        return newDocument(new String(bytes, StandardCharsets.UTF_8));
-    }
-
     public static Document newDocument(Object object) {
         return new DefaultDocument(DefaultDocument.GSON.toJsonTree(object));
     }
 
-    public static Document newDocument(File file) {
-        if (file == null) {
-            return null;
-        }
+    public static Document newJsonDocument(byte[] bytes) {
+        return newJsonDocument(new String(bytes, StandardCharsets.UTF_8));
+    }
 
-        return newDocument(file.toPath());
+    public static Document newYamlDocument(byte[] bytes) {
+        return newYamlDocument(new String(bytes, StandardCharsets.UTF_8));
     }
 
     public static Document newJsonDocument(Path path) {

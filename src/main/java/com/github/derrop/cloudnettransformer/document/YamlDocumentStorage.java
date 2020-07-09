@@ -1,7 +1,6 @@
 package com.github.derrop.cloudnettransformer.document;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -17,18 +16,10 @@ public class YamlDocumentStorage implements DocumentStorage {
     private final ThreadLocal<Yaml> yaml = new ThreadLocal<Yaml>() {
         @Override
         protected Yaml initialValue() {
-            Representer representer = new Representer() {
-                {
-                    /*representers.put(DefaultDocument.class, data -> represent(((DefaultDocument) data).jsonObject.entrySet()));
-                    representers.put(JsonPrimitive.class, data -> represent(((JsonPrimitive) data).getAsString()));
-                    representers.put(JsonObject.class, data -> represent(((JsonObject) data).entrySet()));*/
-                }
-            };
-
             DumperOptions options = new DumperOptions();
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-            return new Yaml(new Constructor(), representer, options);
+            return new Yaml(new Constructor(), new Representer(), options);
         }
     };
 

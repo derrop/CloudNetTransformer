@@ -73,7 +73,7 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
             return false;
         }
 
-        Document document = Documents.newDocument(configPath);
+        Document document = Documents.newJsonDocument(configPath);
         if (!document.contains("config")) {
             return false;
         }

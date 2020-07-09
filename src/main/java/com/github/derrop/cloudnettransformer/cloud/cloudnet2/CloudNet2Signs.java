@@ -97,7 +97,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
             return false;
         }
 
-        Document config = Documents.newDocument(configPath).getDocument("layout_config");
+        Document config = Documents.newJsonDocument(configPath).getDocument("layout_config");
         if (config == null) {
             return false;
         }
