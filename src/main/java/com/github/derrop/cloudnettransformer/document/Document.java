@@ -54,6 +54,8 @@ public interface Document {
 
     Document getDocument(String key);
 
+    Collection<Document> getDocuments(String key);
+
     int getInt(String key);
 
     double getDouble(String key);
@@ -109,6 +111,8 @@ public interface Document {
     String getString(String key, String def);
 
     Document getDocument(String key, Document def);
+
+    Collection<Document> getDocuments(String key, Collection<Document> def);
 
     JsonArray getJsonArray(String key, JsonArray def);
 

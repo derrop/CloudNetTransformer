@@ -56,7 +56,7 @@ public class DefaultDocument implements Document {
     }
 
     public DefaultDocument(JsonElement jsonElement) {
-        this(jsonElement.isJsonObject() ? jsonElement.getAsJsonObject() : new JsonObject());
+        this(jsonElement.getAsJsonObject());
     }
 
     public DefaultDocument(Properties properties) {
@@ -276,6 +276,28 @@ public class DefaultDocument implements Document {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Collection<Document> getDocuments(String key) {
+        if (!contains(key)) {
+            return null;
+        }
+
+        JsonElement jsonElement = this.jsonObject.get(key);
+
+        if (jsonElement.isJsonArray()) {
+            JsonArray array = jsonElement.getAsJsonArray();
+            Collection<Document> documents = new ArrayList<>();
+            for (JsonElement element : array) {
+                if (element.isJsonObject()) {
+                    documents.add(new DefaultDocument(element.getAsJsonObject()));
+                }
+            }
+            return documents;
+        }
+
+        return null;
     }
 
     public int getInt(String key) {
@@ -585,6 +607,15 @@ public class DefaultDocument implements Document {
         }
 
         return this.getDocument(key);
+    }
+
+    @Override
+    public Collection<Document> getDocuments(String key, Collection<Document> def) {
+        if (!this.contains(key)) {
+            this.append(key, def);
+        }
+
+        return this.getDocuments(key);
     }
 
     public JsonArray getJsonArray(String key, JsonArray def) {
