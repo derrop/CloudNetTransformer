@@ -46,21 +46,35 @@ public class CloudTransformer {
     }
 
     public void askConsole() throws IOException {
-        CloudType source;
+        CloudType source = this.readSource();
+        CloudType target = this.readTarget(source);
+        Path directory = this.readSourceDirectory(source);
 
+        this.transform(directory, source, target);
+    }
+
+    private CloudType readSource() {
+        CloudType source;
         do {
             System.out.println("Which CloudSystem are you currently running on?");
             System.out.println("Possible answers: " + Arrays.stream(CloudType.values()).map(CloudType::getName).collect(Collectors.joining(", ")));
 
             source = CloudType.getByName(this.readLine());
         } while (source == null);
+        return source;
+    }
 
-        CloudType finalSource = source;
+    private CloudType readTarget(CloudType source) {
+        CloudType[] remainingTypes = Arrays.stream(CloudType.values()).filter(cloudType -> cloudType != source).toArray(CloudType[]::new);
+        if (remainingTypes.length == 1) {
+            return remainingTypes[0];
+        }
+
         CloudType target;
 
         do {
             System.out.println("Which CloudSystem do you want to run on?");
-            System.out.println("Possible answers: " + Arrays.stream(CloudType.values()).filter(cloudType -> cloudType != finalSource).map(CloudType::getName).collect(Collectors.joining(", ")));
+            System.out.println("Possible answers: " + Arrays.stream(remainingTypes).map(CloudType::getName).collect(Collectors.joining(", ")));
 
             target = CloudType.getByName(this.readLine());
             if (target == source) {
@@ -68,12 +82,14 @@ public class CloudTransformer {
             }
         } while (target == null);
 
-        CloudType finalTarget = target;
+        return target;
+    }
 
+    private Path readSourceDirectory(CloudType source) {
         Path directory;
 
         do {
-            System.out.println("Where is your Cloud located at?");
+            System.out.println("Where is your " + source.getName() + " located at?");
             if (source.getHint() != null) {
                 System.out.println(source.getHint());
             }
@@ -90,7 +106,7 @@ public class CloudTransformer {
             }
         } while (directory == null);
 
-        this.transform(directory, finalSource, finalTarget);
+        return directory;
     }
 
     public static void main(String[] args) throws IOException {
