@@ -92,6 +92,22 @@ public class CloudNet2Services implements CloudReader, CloudWriter {
 
             Document proxyConfig = Documents.newDocument().append("customPayloadFixer", false);
 
+            Document emptyMotd = Documents.newDocument().append("firstLine", "").append("secondLine", "");
+
+            proxyConfig
+                    .append("enabled", false)
+                    .append("maintenance", false)
+                    .append("motdsLayouts", Collections.singletonList(emptyMotd))
+                    .append("maintenanceMotdLayout", emptyMotd)
+                    .append("maintenaceProtocol", "")
+                    .append("maxPlayers", 100)
+                    .append("customPayloadFixer", false)
+                    .append("autoSlot", Documents.newDocument().append("enabled", false).append("dynamicSlotSize", 1))
+                    .append("tabList", Documents.newDocument().append("enabled", false).append("header", "").append("footer", ""))
+                    .append("playerInfo", Collections.emptyList())
+                    .append("whitelist", Collections.emptyList())
+                    .append("dynamicFallback", Documents.newDocument().append("defaultFallback", "Lobby").append("fallbacks", Collections.emptyList()));
+
             cloudSystem.getLoginConfigurations().stream().filter(config -> config.getTargetGroup().equals(task.getName())).findFirst()
                     .ifPresent(loginConfiguration -> this.writeLoginConfiguration(proxyConfig, loginConfiguration));
 
