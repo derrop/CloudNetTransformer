@@ -2,6 +2,8 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
 
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
@@ -155,11 +157,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
                 config.getDocument("searchingAnimation").getInt("animationsPerSecond")
         );
 
-        Map<SignMessage, String> messages = new HashMap<>();
-        for (SignMessage message : SignMessage.values()) {
-            messages.put(message, message.getDefaultMessage());
-        }
-        messages.put(SignMessage.SERVER_CONNECTING, ""); // CloudNet 2 doesn't have the connecting message
+        cloudSystem.setMessage(MessageType.SIGN_SERVER_CONNECTING, ""); // CloudNet 2 doesn't have the connecting message
 
         // TODO: Not for Lobby, but for every group with the groupMode LOBBY or STATIC_LOBBY
         cloudSystem.setSignConfiguration(new SignConfiguration(
@@ -171,7 +169,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
                                 searchLayout, searchLayout
                         )
                 ),
-                messages
+                cloudSystem.getMessages(MessageCategory.SIGNS)
         ));
 
         return true;

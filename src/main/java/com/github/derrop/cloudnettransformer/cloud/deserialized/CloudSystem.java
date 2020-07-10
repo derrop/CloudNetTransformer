@@ -1,16 +1,18 @@
 package com.github.derrop.cloudnettransformer.cloud.deserialized;
 
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionConfiguration;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.login.LoginConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.FallbackConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.login.LoginConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabListConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.*;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.SignConfiguration;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CloudSystem {
 
@@ -23,6 +25,39 @@ public class CloudSystem {
     private final Collection<MotdConfiguration> motdConfigurations = new ArrayList<>();
     private final Collection<TabListConfiguration> tabListConfigurations = new ArrayList<>();
     private final Collection<LoginConfiguration> loginConfigurations = new ArrayList<>();
+
+    private final Map<MessageType, String> messages = new HashMap<>();
+
+    public CloudSystem() {
+        for (MessageType type : MessageType.values()) {
+            this.messages.put(type, type.getDefaultMessage());
+        }
+    }
+
+    public void setMessage(MessageType type, String message) {
+        this.messages.put(type, message);
+    }
+
+    public Map<MessageType, String> getMessages() {
+        return this.messages;
+    }
+
+    public String getMessage(MessageType type) {
+        return this.messages.get(type);
+    }
+
+    public Map<MessageType, String> getMessages(MessageCategory category) {
+        return this.messages.entrySet().stream()
+                .filter(entry -> entry.getKey().getCategory() == category)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public Map<MessageType, String> getMessages(MessageType... types) {
+        Collection<MessageType> collection = Arrays.asList(types);
+        return this.messages.entrySet().stream()
+                .filter(entry -> collection.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
     public SignConfiguration getSignConfiguration() {
         return this.signConfiguration;

@@ -1,6 +1,7 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
@@ -54,11 +55,11 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
         document.append("configurations", configurations);
 
         Map<String, String> messages = new HashMap<>();
-        messages.put("server-connecting-message", signConfiguration.getMessages().get(SignMessage.SERVER_CONNECTING));
-        messages.put("command-cloudsign-remove-success", signConfiguration.getMessages().get(SignMessage.SIGN_REMOVE_SUCCESS));
-        messages.put("command-cloudsign-create-success", signConfiguration.getMessages().get(SignMessage.SIGN_CREATE_SUCCESS));
-        messages.put("command-cloudsign-cleanup-success", signConfiguration.getMessages().get(SignMessage.SIGN_CLEANUP_SUCCESS));
-        messages.put("command-cloudsign-sign-already-exist", signConfiguration.getMessages().get(SignMessage.SIGN_ALREADY_EXISTS));
+        messages.put("server-connecting-message", signConfiguration.getMessages().get(MessageType.SIGN_SERVER_CONNECTING));
+        messages.put("command-cloudsign-remove-success", signConfiguration.getMessages().get(MessageType.SIGN_REMOVE_SUCCESS));
+        messages.put("command-cloudsign-create-success", signConfiguration.getMessages().get(MessageType.SIGN_CREATE_SUCCESS));
+        messages.put("command-cloudsign-cleanup-success", signConfiguration.getMessages().get(MessageType.SIGN_CLEANUP_SUCCESS));
+        messages.put("command-cloudsign-sign-already-exist", signConfiguration.getMessages().get(MessageType.SIGN_ALREADY_EXISTS));
         document.append("messages", messages);
 
         Documents.jsonStorage().write(document, this.config(directory));
@@ -113,12 +114,12 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
         }
 
         Map<String, String> messages = config.get("messages", TypeToken.getParameterized(Map.class, String.class, String.class).getType());
-        Map<SignMessage, String> outMessages = new HashMap<>(messages.size());
-        outMessages.put(SignMessage.SERVER_CONNECTING, messages.get("server-connecting-message"));
-        outMessages.put(SignMessage.SIGN_REMOVE_SUCCESS, messages.get("command-cloudsign-remove-success"));
-        outMessages.put(SignMessage.SIGN_CREATE_SUCCESS, messages.get("command-cloudsign-create-success"));
-        outMessages.put(SignMessage.SIGN_CLEANUP_SUCCESS, messages.get("command-cloudsign-cleanup-success"));
-        outMessages.put(SignMessage.SIGN_ALREADY_EXISTS, messages.get("command-cloudsign-sign-already-exist"));
+        Map<MessageType, String> outMessages = new HashMap<>(messages.size());
+        outMessages.put(MessageType.SIGN_SERVER_CONNECTING, messages.get("server-connecting-message"));
+        outMessages.put(MessageType.SIGN_REMOVE_SUCCESS, messages.get("command-cloudsign-remove-success"));
+        outMessages.put(MessageType.SIGN_CREATE_SUCCESS, messages.get("command-cloudsign-create-success"));
+        outMessages.put(MessageType.SIGN_CLEANUP_SUCCESS, messages.get("command-cloudsign-cleanup-success"));
+        outMessages.put(MessageType.SIGN_ALREADY_EXISTS, messages.get("command-cloudsign-sign-already-exist"));
 
         cloudSystem.setSignConfiguration(new SignConfiguration(configurations, outMessages));
 
