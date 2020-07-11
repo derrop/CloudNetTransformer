@@ -48,7 +48,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReader,
         PermissionConfiguration permissionConfiguration = cloudSystem.getPermissionConfiguration();
 
         Path moduleConfig = this.moduleConfig(directory);
-        Documents.jsonStorage().write(Documents.newDocument().append("enabled", permissionConfiguration.isEnabled()).append("groups", new String[0]), moduleConfig);
+        Documents.jsonStorage().write(Documents.newDocument().append("enabled", permissionConfiguration.isEnabled()).append("excludedGroups", new String[0]), moduleConfig);
 
         Collection<Document> groups = new ArrayList<>(permissionConfiguration.getGroups().size());
 
