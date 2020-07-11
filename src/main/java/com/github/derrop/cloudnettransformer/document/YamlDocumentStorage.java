@@ -13,15 +13,12 @@ import java.util.*;
 
 public class YamlDocumentStorage implements DocumentStorage {
 
-    private final ThreadLocal<Yaml> yaml = new ThreadLocal<Yaml>() {
-        @Override
-        protected Yaml initialValue() {
-            DumperOptions options = new DumperOptions();
-            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+    private final ThreadLocal<Yaml> yaml = ThreadLocal.withInitial(() -> {
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-            return new Yaml(new Constructor(), new Representer(), options);
-        }
-    };
+        return new Yaml(new Constructor(), new Representer(), options);
+    });
 
     @SuppressWarnings("unchecked")
     @Override

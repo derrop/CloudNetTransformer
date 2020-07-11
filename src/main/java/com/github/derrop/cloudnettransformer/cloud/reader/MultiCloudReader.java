@@ -15,6 +15,11 @@ public class MultiCloudReader implements CloudReader {
         this.readers = readers;
     }
 
+    public MultiCloudReader addReader(CloudReader reader) {
+        this.readers.add(reader);
+        return this;
+    }
+
     @Override
     public String getName() {
         return this.readers.stream().map(CloudReader::getName).collect(Collectors.joining(", "));

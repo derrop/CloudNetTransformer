@@ -15,6 +15,11 @@ public class MultiCloudWriter implements CloudWriter {
         this.writers = writers;
     }
 
+    public MultiCloudWriter addWriter(CloudWriter writer) {
+        this.writers.add(writer);
+        return this;
+    }
+
     @Override
     public String getName() {
         return this.writers.stream().map(CloudWriter::getName).collect(Collectors.joining(", "));
