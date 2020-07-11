@@ -8,20 +8,22 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdL
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabListConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
 import com.github.derrop.cloudnettransformer.document.Document;
 import com.github.derrop.cloudnettransformer.document.Documents;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-public class CloudNet3SyncProxy implements CloudReader, CloudWriter {
-    @Override
-    public String getName() {
-        return "SyncProxy";
+public class CloudNet3SyncProxy extends FileDownloader implements CloudReader, CloudWriter {
+
+    public CloudNet3SyncProxy() {
+        super("SyncProxy", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-syncproxy/build/libs/cloudnet-syncproxy.jar", "modules/cloudnet-syncproxy.jar");
     }
 
     private Path config(Path directory) {
@@ -29,7 +31,11 @@ public class CloudNet3SyncProxy implements CloudReader, CloudWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
+    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+        if (!super.write(cloudSystem, directory)) {
+            return false;
+        }
+
         Document document = Documents.newDocument()
                 .append("loginConfigurations",
                         cloudSystem.getLoginConfigurations().stream()

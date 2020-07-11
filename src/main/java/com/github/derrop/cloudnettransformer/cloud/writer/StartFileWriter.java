@@ -13,7 +13,7 @@ public class StartFileWriter extends FileDownloader {
     private static String getFileSuffix() {
         if (fileSuffix == null) {
             String os = System.getProperty("os.name", "generic").toLowerCase();
-            if ((os.contains("mac")) || (os.contains("darwin"))) {
+            if (os.contains("mac") || os.contains("darwin")) {
                 fileSuffix = ".command";
             } else if (os.contains("win")) {
                 fileSuffix = ".bat";

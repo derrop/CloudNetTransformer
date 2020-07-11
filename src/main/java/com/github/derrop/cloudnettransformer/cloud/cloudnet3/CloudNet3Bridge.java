@@ -6,18 +6,20 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.F
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.FallbackConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
 import com.github.derrop.cloudnettransformer.document.Document;
 import com.github.derrop.cloudnettransformer.document.Documents;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class CloudNet3Bridge implements CloudReader, CloudWriter {
-    @Override
-    public String getName() {
-        return "Bridge";
+public class CloudNet3Bridge extends FileDownloader implements CloudReader, CloudWriter {
+
+    public CloudNet3Bridge() {
+        super("Bridge", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-bridge/build/libs/cloudnet-bridge.jar", "modules/cloudnet-bridge.jar");
     }
 
     private Path config(Path directory) {
@@ -25,7 +27,11 @@ public class CloudNet3Bridge implements CloudReader, CloudWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
+    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+        if (!super.write(cloudSystem, directory)) {
+            return false;
+        }
+
         Map<String, String> messages = new HashMap<>();
         messages.put("command-hub-success-connect", cloudSystem.getMessage(MessageType.COMMAND_HUB_CONNECT_SUCCESS));
         messages.put("command-hub-already-in-hub", cloudSystem.getMessage(MessageType.COMMAND_HUB_ALREADY_HUB));

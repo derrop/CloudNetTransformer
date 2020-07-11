@@ -5,11 +5,13 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageT
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
 import com.github.derrop.cloudnettransformer.document.Document;
 import com.github.derrop.cloudnettransformer.document.Documents;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -18,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CloudNet3Signs implements CloudReader, CloudWriter {
-    @Override
-    public String getName() {
-        return "Signs";
+public class CloudNet3Signs extends FileDownloader implements CloudReader, CloudWriter {
+
+    public CloudNet3Signs() {
+        super("Signs", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-signs/build/libs/cloudnet-signs.jar", "modules/cloudnet-signs.jar");
     }
 
     private Path config(Path directory) {
@@ -29,8 +31,11 @@ public class CloudNet3Signs implements CloudReader, CloudWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
+    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
         if (cloudSystem.getSignConfiguration() == null) {
+            return false;
+        }
+        if (!super.write(cloudSystem, directory)) {
             return false;
         }
 

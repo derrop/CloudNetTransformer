@@ -6,6 +6,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Perm
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionGroup;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
 import com.github.derrop.cloudnettransformer.document.Document;
 import com.github.derrop.cloudnettransformer.document.Documents;
 import com.google.gson.JsonArray;
@@ -21,13 +22,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloudNet3Permissions implements CloudReader, CloudWriter {
+public class CloudNet3Permissions extends FileDownloader implements CloudReader, CloudWriter {
 
-    private static final Type PERMISSION_COLLECTION_TYPE = TypeToken.getParameterized(Collection.class, Permission.class).getType();
-
-    @Override
-    public String getName() {
-        return "Permissions";
+    public CloudNet3Permissions() {
+        super("Permissions", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-cloudperms/build/libs/cloudnet-cloudperms.jar", "modules/cloudnet-cloudperms.jar");
     }
 
     private Path config(Path directory) {
@@ -39,8 +37,11 @@ public class CloudNet3Permissions implements CloudReader, CloudWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
+    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
         if (cloudSystem.getPermissionConfiguration() == null) {
+            return false;
+        }
+        if (!super.write(cloudSystem, directory)) {
             return false;
         }
 
