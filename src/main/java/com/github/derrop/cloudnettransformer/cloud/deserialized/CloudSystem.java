@@ -1,5 +1,6 @@
 package com.github.derrop.cloudnettransformer.cloud.deserialized;
 
+import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionConfiguration;
@@ -18,6 +19,8 @@ public class CloudSystem {
 
     private SignConfiguration signConfiguration;
     private PermissionConfiguration permissionConfiguration;
+    private DatabaseProvider databaseProvider;
+
     private final Collection<ServiceTask> tasks = new ArrayList<>();
     private final Collection<ServiceGroup> groups = new ArrayList<>();
 
@@ -73,6 +76,14 @@ public class CloudSystem {
 
     public void setPermissionConfiguration(PermissionConfiguration permissionConfiguration) {
         this.permissionConfiguration = permissionConfiguration;
+    }
+
+    public DatabaseProvider getDatabaseProvider() {
+        return this.databaseProvider;
+    }
+
+    public void setDatabaseProvider(DatabaseProvider databaseProvider) {
+        this.databaseProvider = databaseProvider;
     }
 
     public Collection<ServiceTask> getTasks() {

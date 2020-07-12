@@ -113,6 +113,9 @@ public class CloudTransformer {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         CloudTransformer transformer = new CloudTransformer(reader);
 
+        /*CloudSystem cloudSystem = new CloudSystem();
+        CloudType.CLOUDNET_3.getReader().read(cloudSystem, Paths.get("D:\\Dev\\Tests\\CloudNet3"));
+        System.out.println(Documents.jsonStorage().write(Documents.newDocument(cloudSystem)));*/
         transformer.askConsole();
     }
 
