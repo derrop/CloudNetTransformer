@@ -4,6 +4,8 @@ import java.util.Collection;
 
 public interface DatabaseProvider {
 
+    boolean init();
+
     Database getDatabase(String name);
 
     boolean containsDatabase(String name);
@@ -11,5 +13,7 @@ public interface DatabaseProvider {
     boolean deleteDatabase(String name);
 
     Collection<String> getDatabaseNames();
+
+    void close();
 
 }

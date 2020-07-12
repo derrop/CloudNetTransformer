@@ -2,11 +2,15 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet3.database;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
+import com.github.derrop.cloudnettransformer.util.ThrowableFunction;
 
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
-public class CloudNet3MySQLDatabaseProvider implements DatabaseProvider {
+public class CloudNet3MySQLDatabaseProvider extends CloudNet3SQLDatabaseProvider {
 
     // TODO
 
@@ -17,13 +21,23 @@ public class CloudNet3MySQLDatabaseProvider implements DatabaseProvider {
     }
 
     @Override
-    public Database getDatabase(String name) {
+    public boolean init() {
+        return false;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
         return null;
     }
 
     @Override
-    public boolean containsDatabase(String name) {
-        return false;
+    public int executeUpdate(String query, Object... objects) {
+        return 0;
+    }
+
+    @Override
+    public <T> T executeQuery(String query, ThrowableFunction<ResultSet, T, SQLException> function, Object... objects) {
+        return null;
     }
 
     @Override
@@ -34,5 +48,10 @@ public class CloudNet3MySQLDatabaseProvider implements DatabaseProvider {
     @Override
     public Collection<String> getDatabaseNames() {
         return null;
+    }
+
+    @Override
+    public void close() {
+
     }
 }

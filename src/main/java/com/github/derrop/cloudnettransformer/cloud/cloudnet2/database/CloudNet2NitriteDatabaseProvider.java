@@ -17,6 +17,11 @@ public class CloudNet2NitriteDatabaseProvider implements DatabaseProvider {
     }
 
     @Override
+    public boolean init() {
+        return false;
+    }
+
+    @Override
     public Database getDatabase(String name) {
         return null;
     }
@@ -34,5 +39,9 @@ public class CloudNet2NitriteDatabaseProvider implements DatabaseProvider {
     @Override
     public Collection<String> getDatabaseNames() {
         return null;
+    }
+
+    @Override
+    public void close() {
     }
 }

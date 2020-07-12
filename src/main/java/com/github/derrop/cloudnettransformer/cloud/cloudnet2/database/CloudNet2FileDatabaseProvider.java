@@ -20,6 +20,11 @@ public class CloudNet2FileDatabaseProvider implements DatabaseProvider {
     }
 
     @Override
+    public boolean init() {
+        return true;
+    }
+
+    @Override
     public Database getDatabase(String name) {
         return new CloudNet2FileDatabase(this.directory.resolve(name), name);
     }
@@ -51,5 +56,9 @@ public class CloudNet2FileDatabaseProvider implements DatabaseProvider {
             exception.printStackTrace();
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public void close() {
     }
 }

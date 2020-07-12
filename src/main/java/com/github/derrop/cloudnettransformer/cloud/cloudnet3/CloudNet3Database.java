@@ -57,6 +57,10 @@ public class CloudNet3Database implements CloudReader {
 
         try {
             DatabaseProvider databaseProvider = providerClass.getDeclaredConstructor(Path.class).newInstance(directory);
+            if (!databaseProvider.init()) {
+                return false;
+            }
+
             cloudSystem.setDatabaseProvider(databaseProvider);
 
             return true;

@@ -25,10 +25,12 @@ public class CloudNet2Database implements CloudReader {
         }
 
         Path nitriteUpgradeFile = databaseDirectory.resolve(".upgraded_nitrite");
-
         boolean nitrite = Files.exists(nitriteUpgradeFile) && Files.isDirectory(nitriteUpgradeFile);
 
         DatabaseProvider databaseProvider = nitrite ? new CloudNet2NitriteDatabaseProvider(databaseDirectory.resolve("cloudnet.db")) : new CloudNet2FileDatabaseProvider(databaseDirectory);
+        if (!databaseProvider.init()) {
+            return false;
+        }
 
         cloudSystem.setDatabaseProvider(databaseProvider);
 
