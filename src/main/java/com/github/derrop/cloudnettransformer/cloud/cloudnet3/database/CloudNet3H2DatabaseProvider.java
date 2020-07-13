@@ -76,7 +76,7 @@ public class CloudNet3H2DatabaseProvider extends CloudNet3SQLDatabaseProvider {
                 return function.apply(resultSet);
             }
 
-        } catch (Throwable e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
