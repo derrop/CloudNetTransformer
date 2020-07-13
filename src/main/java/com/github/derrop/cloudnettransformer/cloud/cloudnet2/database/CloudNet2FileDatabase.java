@@ -1,8 +1,8 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet2.database;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 import com.github.derrop.cloudnettransformer.util.FileUtils;
 
 import java.io.IOException;

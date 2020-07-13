@@ -7,8 +7,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Perm
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionGroup;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;

@@ -1,7 +1,7 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3.database;
 
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 import com.github.derrop.cloudnettransformer.util.ThrowableFunction;
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;

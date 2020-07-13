@@ -1,6 +1,6 @@
 package com.github.derrop.cloudnettransformer.cloud.deserialized.database;
 
-import com.github.derrop.cloudnettransformer.document.Document;
+import com.github.derrop.documents.Document;
 
 import java.util.Collection;
 import java.util.List;

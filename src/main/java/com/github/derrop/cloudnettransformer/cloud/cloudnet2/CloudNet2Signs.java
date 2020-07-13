@@ -7,9 +7,9 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageT
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.document.DefaultDocument;
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.DefaultDocument;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 import com.google.gson.JsonElement;
 
 import java.nio.file.Files;
@@ -99,7 +99,7 @@ public class CloudNet2Signs implements CloudReader, CloudWriter {
             return false;
         }
 
-        Document config = Documents.newJsonDocument(configPath).getDocument("layout_config");
+        Document config = Documents.jsonStorage().read(configPath).getDocument("layout_config");
         if (config == null) {
             return false;
         }

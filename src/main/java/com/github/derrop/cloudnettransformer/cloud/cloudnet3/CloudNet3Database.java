@@ -5,8 +5,8 @@ import com.github.derrop.cloudnettransformer.cloud.cloudnet3.database.CloudNet3M
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 
 import java.io.IOException;
 import java.nio.file.Files;

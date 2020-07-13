@@ -6,8 +6,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
 import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
@@ -79,7 +79,7 @@ public class CloudNet3Signs extends FileDownloader implements CloudReader, Cloud
             return false;
         }
 
-        Document document = Documents.newJsonDocument(configPath);
+        Document document = Documents.jsonStorage().read(configPath);
         if (!document.contains("config")) {
             return false;
         }

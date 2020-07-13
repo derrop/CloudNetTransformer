@@ -9,8 +9,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.Ta
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
 import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;

@@ -7,14 +7,13 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Perm
 import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
 import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
 import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
-import com.github.derrop.cloudnettransformer.document.Document;
-import com.github.derrop.cloudnettransformer.document.Documents;
+import com.github.derrop.documents.Document;
+import com.github.derrop.documents.Documents;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -98,7 +97,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReader,
         }
 
 
-        Document document = Documents.newJsonDocument(configPath);
+        Document document = Documents.jsonStorage().read(configPath);
         JsonArray array = document.getJsonArray("groups");
 
         Collection<PermissionGroup> groups = new ArrayList<>(array.size());
@@ -128,7 +127,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReader,
         }
 
         Path moduleConfig = this.moduleConfig(directory);
-        boolean enabled = Files.exists(moduleConfig) && Documents.newJsonDocument(moduleConfig).getBoolean("enabled");
+        boolean enabled = Files.exists(moduleConfig) && Documents.jsonStorage().read(moduleConfig).getBoolean("enabled");
 
         cloudSystem.setPermissionConfiguration(new PermissionConfiguration(enabled, groups));
 
