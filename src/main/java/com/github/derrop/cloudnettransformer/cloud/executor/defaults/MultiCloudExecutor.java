@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @DescribedCloudExecutor(name = "Multi")
 public class MultiCloudExecutor implements CloudExecutor {
@@ -23,6 +24,11 @@ public class MultiCloudExecutor implements CloudExecutor {
         for (CloudExecutor executor : executors) {
             this.addExecutor(executor);
         }
+    }
+
+    @Override
+    public String getOverriddenName() {
+        return this.executors.stream().map(ExecutorContainer::getName).collect(Collectors.joining(", "));
     }
 
     @CanIgnoreReturnValue
