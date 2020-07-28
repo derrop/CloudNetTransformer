@@ -40,37 +40,7 @@ public class CloudNet2Permissions implements CloudReaderWriter {
         Map<String, Document> groups = new HashMap<>(permissionConfiguration.getGroups().size());
 
         for (PermissionGroup group : permissionConfiguration.getGroups()) {
-            Document document = Documents.newDocument()
-                    .append("prefix", group.getPrefix())
-                    .append("suffix", group.getSuffix())
-                    .append("display", group.getDisplay())
-                    .append("color", group.getColor())
-                    .append("tagId", group.getSortId())
-                    .append("joinPower", 0)
-                    .append("defaultGroup", group.isDefaultGroup())
-                    .append("options", Documents.newDocument())
-                    .append("implements", group.getGroups());
-
-            Collection<String> permissions = new ArrayList<>();
-            Map<String, Collection<String>> groupPermissions = new HashMap<>();
-
-            for (Permission permission : group.getPermissions()) {
-                String permissionName = (permission.getPotency() < 0 ? "-" : "") + permission.getName();
-
-                if (permission.getTargetGroup() == null) {
-                    permissions.add(permissionName);
-                    continue;
-                }
-
-                if (!groupPermissions.containsKey(permission.getTargetGroup())) {
-                    groupPermissions.put(permission.getTargetGroup(), new ArrayList<>());
-                }
-                groupPermissions.get(permission.getTargetGroup()).add(permissionName);
-            }
-
-            document.append("permissions", permissions).append("serverGroupPermissions", groupPermissions);
-
-            groups.put(group.getName(), document);
+            groups.put(group.getName(), this.writeGroup(group));
         }
 
         Document document = Documents.newDocument()
@@ -80,6 +50,43 @@ public class CloudNet2Permissions implements CloudReaderWriter {
         Documents.yamlStorage().write(document, this.config(directory));
 
         return true;
+    }
+
+    private Document writeGroup(PermissionGroup group) {
+        Document document = Documents.newDocument()
+                .append("prefix", group.getPrefix())
+                .append("suffix", group.getSuffix())
+                .append("display", group.getDisplay())
+                .append("color", group.getColor())
+                .append("tagId", group.getSortId())
+                .append("joinPower", 0)
+                .append("defaultGroup", group.isDefaultGroup())
+                .append("options", Documents.newDocument())
+                .append("implements", group.getGroups());
+
+        Collection<String> permissions = new ArrayList<>();
+        Map<String, Collection<String>> groupPermissions = new HashMap<>();
+
+        for (Permission permission : group.getPermissions()) {
+            String permissionName = (permission.getPotency() < 0 ? "-" : "") + permission.getName();
+
+            if (permission.getTargetGroup() == null) {
+                permissions.add(permissionName);
+                continue;
+            }
+            if (permission.getPotency() < 0) { // serverGroupPermissions in CloudNet 2 don't support negative permissions
+                continue;
+            }
+
+            if (!groupPermissions.containsKey(permission.getTargetGroup())) {
+                groupPermissions.put(permission.getTargetGroup(), new ArrayList<>());
+            }
+            groupPermissions.get(permission.getTargetGroup()).add(permissionName);
+        }
+
+        document.append("permissions", permissions).append("serverGroupPermissions", groupPermissions);
+
+        return document;
     }
 
     @Override
