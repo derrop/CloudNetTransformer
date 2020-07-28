@@ -1,12 +1,16 @@
-package com.github.derrop.cloudnettransformer.cloud.writer;
+package com.github.derrop.cloudnettransformer.cloud.executor.defaults;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 import com.github.derrop.cloudnettransformer.util.HttpHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class StartFileWriter extends FileDownloader {
+@DescribedCloudExecutor(name = "StartFileWriter", types = ExecutorType.WRITE)
+public class StartFileWriter implements CloudExecutor {
 
     private static String fileSuffix;
 
@@ -26,22 +30,32 @@ public class StartFileWriter extends FileDownloader {
         return fileSuffix;
     }
 
+    private final String name;
+    private final String url;
+    private final String path;
+
     public StartFileWriter(String name, String url, String path) {
-        super(name, url, path);
+        this.name = name;
+        this.url = url;
+        this.path = path;
+    }
+
+    public StartFileWriter(String url, String path) {
+        this(null, url, path);
     }
 
     @Override
-    public String getName() {
-        return super.getName() + " StartFile";
+    public String getOverriddenName() {
+        return this.name == null ? null : this.name + " StartFile";
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         if (getFileSuffix() == null) {
             System.out.println("Not writing start file because the OperatingSystem '" + System.getProperty("os.name") + "' could not be detected");
             return true;
         }
 
-        return HttpHelper.download(super.getUrl() + getFileSuffix(), directory.resolve(super.getPath() + getFileSuffix()));
+        return HttpHelper.download(this.url + getFileSuffix(), directory.resolve(this.path + getFileSuffix()));
     }
 }

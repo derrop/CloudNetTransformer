@@ -3,9 +3,9 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.JsonElement;
@@ -20,10 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CloudNet3Signs extends FileDownloader implements CloudReader, CloudWriter {
+@DescribedCloudExecutor(name = "Signs")
+public class CloudNet3Signs extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3Signs() {
-        super("Signs", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-signs/build/libs/cloudnet-signs.jar", "modules/cloudnet-signs.jar");
+        super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-signs/build/libs/cloudnet-signs.jar", "modules/cloudnet-signs.jar");
     }
 
     private Path config(Path directory) {
@@ -35,7 +36,7 @@ public class CloudNet3Signs extends FileDownloader implements CloudReader, Cloud
         if (cloudSystem.getSignConfiguration() == null) {
             return false;
         }
-        if (!super.write(cloudSystem, directory)) {
+        if (!super.downloadFile(directory)) {
             return false;
         }
 

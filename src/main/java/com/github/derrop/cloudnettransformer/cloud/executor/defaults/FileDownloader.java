@@ -1,12 +1,11 @@
-package com.github.derrop.cloudnettransformer.cloud.writer;
+package com.github.derrop.cloudnettransformer.cloud.executor.defaults;
 
-import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.util.HttpHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class FileDownloader implements CloudWriter {
+public class FileDownloader {
 
     private final String name;
     private final String url;
@@ -18,8 +17,11 @@ public class FileDownloader implements CloudWriter {
         this.path = path;
     }
 
-    @Override
-    public String getName() {
+    public FileDownloader(String url, String path) {
+        this(null, url, path);
+    }
+
+    public String getOverriddenName() {
         return this.name;
     }
 
@@ -31,8 +33,8 @@ public class FileDownloader implements CloudWriter {
         return this.path;
     }
 
-    @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    protected boolean downloadFile(Path directory) throws IOException {
         return HttpHelper.download(this.url, directory.resolve(this.path));
     }
+
 }

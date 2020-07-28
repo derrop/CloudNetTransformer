@@ -4,9 +4,9 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionGroup;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.JsonArray;
@@ -21,10 +21,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloudNet3Permissions extends FileDownloader implements CloudReader, CloudWriter {
+@DescribedCloudExecutor(name = "Permissions")
+public class CloudNet3Permissions extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3Permissions() {
-        super("Permissions", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-cloudperms/build/libs/cloudnet-cloudperms.jar", "modules/cloudnet-cloudperms.jar");
+        super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-cloudperms/build/libs/cloudnet-cloudperms.jar", "modules/cloudnet-cloudperms.jar");
     }
 
     private Path config(Path directory) {
@@ -40,7 +41,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReader,
         if (cloudSystem.getPermissionConfiguration() == null) {
             return false;
         }
-        if (!super.write(cloudSystem, directory)) {
+        if (!super.downloadFile(directory)) {
             return false;
         }
 

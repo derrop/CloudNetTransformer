@@ -2,7 +2,9 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
 
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,17 +12,13 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
-public class CloudNet2WrapperKey implements CloudWriter {
+@DescribedCloudExecutor(name = "WrapperKey", types = ExecutorType.WRITE)
+public class CloudNet2WrapperKey implements CloudExecutor {
 
     private static final String WRAPPER_KEY_FILE = "WRAPPER_KEY.cnd";
 
     @Override
-    public String getName() {
-        return "WrapperKey";
-    }
-
-    @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
 
         Path master = directory.resolve(Constants.MASTER_DIRECTORY);
         Path wrapper = directory.resolve(Constants.WRAPPER_DIRECTORY);

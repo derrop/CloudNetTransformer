@@ -5,20 +5,19 @@ import com.github.derrop.cloudnettransformer.cloud.cloudnet2.database.CloudNet2F
 import com.github.derrop.cloudnettransformer.cloud.cloudnet2.database.CloudNet2NitriteDatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CloudNet2Database implements CloudReader {
-    @Override
-    public String getName() {
-        return "Database";
-    }
+@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ)
+public class CloudNet2Database implements CloudExecutor {
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         Path databaseDirectory = directory.resolve(Constants.MASTER_DIRECTORY).resolve("database");
         if (!Files.exists(databaseDirectory) || !Files.isDirectory(databaseDirectory)) {
             return false;
@@ -36,4 +35,5 @@ public class CloudNet2Database implements CloudReader {
 
         return true;
     }
+
 }

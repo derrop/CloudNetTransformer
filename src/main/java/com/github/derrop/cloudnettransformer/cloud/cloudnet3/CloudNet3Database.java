@@ -4,7 +4,9 @@ import com.github.derrop.cloudnettransformer.cloud.cloudnet3.database.CloudNet3H
 import com.github.derrop.cloudnettransformer.cloud.cloudnet3.database.CloudNet3MySQLDatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 
@@ -14,7 +16,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloudNet3Database implements CloudReader {
+@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ)
+public class CloudNet3Database implements CloudExecutor {
 
     private static final Map<String, Class<? extends DatabaseProvider>> AVAILABLE_PROVIDERS = new HashMap<>();
 
@@ -24,12 +27,7 @@ public class CloudNet3Database implements CloudReader {
     }
 
     @Override
-    public String getName() {
-        return "Database";
-    }
-
-    @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         Path registryFile = directory.resolve("local").resolve("registry");
         if (!Files.exists(registryFile)) {
             return false;

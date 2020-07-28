@@ -13,8 +13,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceE
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceInclusion;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTask;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTemplate;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.reflect.TypeToken;
@@ -24,11 +24,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CloudNet2Services implements CloudReader, CloudWriter {
-    @Override
-    public String getName() {
-        return "Services";
-    }
+@DescribedCloudExecutor(name = "Services")
+public class CloudNet2Services implements CloudReaderWriter {
 
     private Path config(Path directory) {
         return directory.resolve(Constants.MASTER_DIRECTORY).resolve("services.json");

@@ -5,8 +5,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionGroup;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.JsonArray;
@@ -21,11 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-public class CloudNet2Permissions implements CloudWriter, CloudReader {
-    @Override
-    public String getName() {
-        return "Permissions";
-    }
+@DescribedCloudExecutor(name = "Permissions")
+public class CloudNet2Permissions implements CloudReaderWriter {
 
     private Path config(Path directory) {
         return directory.resolve(Constants.MASTER_DIRECTORY).resolve("local").resolve("perms.yml");

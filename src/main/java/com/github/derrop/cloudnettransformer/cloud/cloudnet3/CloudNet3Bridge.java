@@ -4,9 +4,9 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.Fallback;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.FallbackConfiguration;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.reflect.TypeToken;
@@ -16,7 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class CloudNet3Bridge extends FileDownloader implements CloudReader, CloudWriter {
+@DescribedCloudExecutor(name = "Bridge")
+public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3Bridge() {
         super("Bridge", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-bridge/build/libs/cloudnet-bridge.jar", "modules/cloudnet-bridge.jar");
@@ -28,7 +29,7 @@ public class CloudNet3Bridge extends FileDownloader implements CloudReader, Clou
 
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
-        if (!super.write(cloudSystem, directory)) {
+        if (!super.downloadFile(directory)) {
             return false;
         }
 

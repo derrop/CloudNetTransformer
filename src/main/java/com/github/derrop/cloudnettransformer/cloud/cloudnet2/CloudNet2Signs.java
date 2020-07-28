@@ -5,8 +5,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.DefaultDocument;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
@@ -14,15 +14,15 @@ import com.google.gson.JsonElement;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class CloudNet2Signs implements CloudReader, CloudWriter {
-    @Override
-    public String getName() {
-        return "Signs";
-    }
+@DescribedCloudExecutor(name = "Signs")
+public class CloudNet2Signs implements CloudReaderWriter {
 
     private Path config(Path directory) {
         return directory.resolve(Constants.MASTER_DIRECTORY).resolve("local").resolve("signLayout.json");

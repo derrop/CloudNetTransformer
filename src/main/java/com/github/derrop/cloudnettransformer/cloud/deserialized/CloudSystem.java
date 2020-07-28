@@ -19,7 +19,7 @@ public class CloudSystem {
 
     private SignConfiguration signConfiguration;
     private PermissionConfiguration permissionConfiguration;
-    private DatabaseProvider databaseProvider;
+    private transient DatabaseProvider databaseProvider;
 
     private final Collection<ServiceTask> tasks = new ArrayList<>();
     private final Collection<ServiceGroup> groups = new ArrayList<>();

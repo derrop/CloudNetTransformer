@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer;
 
 import com.github.derrop.cloudnettransformer.cloud.CloudType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,8 +42,8 @@ public class CloudTransformer {
         System.out.println("Transforming " + sourceType.getName() + " (located at " + sourceDirectory.toAbsolutePath() + ") to " + targetType.getName() + " (located at " + targetDirectory.toAbsolutePath() + ")...");
 
         CloudSystem cloudSystem = new CloudSystem();
-        sourceType.getReader().read(cloudSystem, sourceDirectory);
-        targetType.getWriter().write(cloudSystem, targetDirectory);
+        sourceType.getExecutor().execute(ExecutorType.READ, cloudSystem, sourceDirectory);
+        targetType.getExecutor().execute(ExecutorType.WRITE, cloudSystem, sourceDirectory);
     }
 
     public void askConsole() throws IOException {
@@ -113,9 +114,6 @@ public class CloudTransformer {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         CloudTransformer transformer = new CloudTransformer(reader);
 
-        /*CloudSystem cloudSystem = new CloudSystem();
-        CloudType.CLOUDNET_3.getReader().read(cloudSystem, Paths.get("D:\\Dev\\Tests\\CloudNet3"));
-        System.out.println(Documents.jsonStorage().write(Documents.newDocument(cloudSystem)));*/
         transformer.askConsole();
     }
 

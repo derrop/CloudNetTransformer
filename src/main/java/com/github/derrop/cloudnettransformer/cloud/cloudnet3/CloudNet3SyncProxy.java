@@ -6,9 +6,9 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.login.Logi
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdLayout;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabListConfiguration;
-import com.github.derrop.cloudnettransformer.cloud.reader.CloudReader;
-import com.github.derrop.cloudnettransformer.cloud.writer.CloudWriter;
-import com.github.derrop.cloudnettransformer.cloud.writer.FileDownloader;
+import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.reflect.TypeToken;
@@ -20,10 +20,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-public class CloudNet3SyncProxy extends FileDownloader implements CloudReader, CloudWriter {
+@DescribedCloudExecutor(name = "SyncProxy")
+public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3SyncProxy() {
-        super("SyncProxy", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-syncproxy/build/libs/cloudnet-syncproxy.jar", "modules/cloudnet-syncproxy.jar");
+        super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-syncproxy/build/libs/cloudnet-syncproxy.jar", "modules/cloudnet-syncproxy.jar");
     }
 
     private Path config(Path directory) {
@@ -32,7 +33,7 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReader, C
 
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
-        if (!super.write(cloudSystem, directory)) {
+        if (!super.downloadFile(directory)) {
             return false;
         }
 
