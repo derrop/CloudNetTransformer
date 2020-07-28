@@ -1,11 +1,13 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
 
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloaderExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.MultiCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.StartFileWriter;
 
 import java.util.Arrays;
 
+@DescribedCloudExecutor(name = "DefaultFiles")
 public class CloudNet3Files extends MultiCloudExecutor {
     public CloudNet3Files() {
         super(Arrays.asList(

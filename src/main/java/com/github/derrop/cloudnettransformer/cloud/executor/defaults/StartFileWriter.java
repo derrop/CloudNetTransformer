@@ -9,7 +9,7 @@ import com.github.derrop.cloudnettransformer.util.HttpHelper;
 import java.io.IOException;
 import java.nio.file.Path;
 
-@DescribedCloudExecutor(name = "StartFileWriter", types = ExecutorType.WRITE)
+@DescribedCloudExecutor(name = "StartFile", types = ExecutorType.WRITE)
 public class StartFileWriter implements CloudExecutor {
 
     private static String fileSuffix;
