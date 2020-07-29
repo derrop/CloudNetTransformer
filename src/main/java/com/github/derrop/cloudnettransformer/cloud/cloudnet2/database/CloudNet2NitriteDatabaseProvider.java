@@ -18,7 +18,7 @@ public class CloudNet2NitriteDatabaseProvider implements DatabaseProvider {
 
     @Override
     public boolean init() {
-        return false;
+        throw new UnsupportedOperationException("Nitrite is not implemented yet");
     }
 
     @Override
