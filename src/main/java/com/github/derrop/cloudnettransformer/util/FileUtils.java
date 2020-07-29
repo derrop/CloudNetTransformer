@@ -25,4 +25,25 @@ public class FileUtils {
         });
     }
 
+    public static void copyDirectory(Path sourceDirectory, Path targetDirectory) throws IOException {
+        if (!Files.exists(sourceDirectory)) {
+            return;
+        }
+
+        Files.createDirectories(targetDirectory);
+        Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                Files.createDirectories(targetDirectory.resolve(sourceDirectory.relativize(dir)));
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.copy(file, targetDirectory.resolve(sourceDirectory.relativize(file)));
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
 }

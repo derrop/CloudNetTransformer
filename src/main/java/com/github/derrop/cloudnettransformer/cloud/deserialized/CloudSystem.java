@@ -21,13 +21,14 @@ public class CloudSystem {
 
     private SignConfiguration signConfiguration;
     private PermissionConfiguration permissionConfiguration;
-    private PermissionUserProvider permissionUserProvider;
-    private PlayerProvider playerProvider;
-    private DatabaseProvider databaseProvider;
+    private final Collection<StaticService> staticServices = new ArrayList<>();
+    private transient PermissionUserProvider permissionUserProvider;
+    private transient PlayerProvider playerProvider;
 
 
     private final Collection<ServiceTask> tasks = new ArrayList<>();
     private final Collection<ServiceGroup> groups = new ArrayList<>();
+    private transient DatabaseProvider databaseProvider;
 
     private final Collection<FallbackConfiguration> fallbackConfigurations = new ArrayList<>();
     private final Collection<MotdConfiguration> motdConfigurations = new ArrayList<>();
@@ -105,6 +106,10 @@ public class CloudSystem {
 
     public void setDatabaseProvider(DatabaseProvider databaseProvider) {
         this.databaseProvider = databaseProvider;
+    }
+
+    public Collection<StaticService> getStaticServices() {
+        return this.staticServices;
     }
 
     public Collection<ServiceTask> getTasks() {
