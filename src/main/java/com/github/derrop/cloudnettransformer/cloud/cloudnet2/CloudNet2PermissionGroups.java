@@ -7,6 +7,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.grou
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionGroup;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.JsonArray;
@@ -21,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-@DescribedCloudExecutor(name = "PermissionGroups")
+@DescribedCloudExecutor(name = "PermissionGroups", priority = ExecutorPriority.FIRST)
 public class CloudNet2PermissionGroups implements CloudReaderWriter {
 
     private Path config(Path directory) {

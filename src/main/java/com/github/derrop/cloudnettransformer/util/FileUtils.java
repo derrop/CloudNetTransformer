@@ -10,6 +10,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class FileUtils {
 
     public static void deleteDirectory(Path path) throws IOException {
+        if (Files.notExists(path)) {
+            return;
+        }
+
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -30,7 +34,10 @@ public class FileUtils {
             return;
         }
 
+        deleteDirectory(targetDirectory);
+
         Files.createDirectories(targetDirectory);
+
         Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {

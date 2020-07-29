@@ -1,5 +1,6 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3.player;
 
+import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.player.PlayerProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.player.RegisteredPlayer;
@@ -13,9 +14,11 @@ import java.util.function.Consumer;
 
 public class CloudNet3PlayerProvider implements PlayerProvider {
 
+    private final CloudSystem cloudSystem;
     private final Database database;
 
-    public CloudNet3PlayerProvider(Database database) {
+    public CloudNet3PlayerProvider(CloudSystem cloudSystem, Database database) {
+        this.cloudSystem = cloudSystem;
         this.database = database;
     }
 
@@ -60,7 +63,13 @@ public class CloudNet3PlayerProvider implements PlayerProvider {
     public void insertPlayer(RegisteredPlayer player) {
         String uuidString = player.getUniqueId().toString();
 
-        Document serviceId = Documents.newDocument().append("uniqueId", UUID.randomUUID()).append("nodeUniqueId", "Node-1").append("taskName", "Proxy").append("taskServiceId", 1).append("environment", ServiceEnvironment.BUNGEECORD);
+        Document serviceId = Documents.newDocument()
+                .append("uniqueId", UUID.randomUUID())
+                .append("nodeUniqueId", this.cloudSystem.getConfig().getComponentName())
+                .append("taskName", "Proxy")
+                .append("taskServiceId", 1)
+                .append("environment", ServiceEnvironment.BUNGEECORD);
+
         Document lastNetworkConnectionInfo = Documents.newDocument()
                 .append("uniqueId", uuidString)
                 .append("name", player.getName())

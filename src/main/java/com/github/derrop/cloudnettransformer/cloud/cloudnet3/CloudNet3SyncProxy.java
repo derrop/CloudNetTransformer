@@ -8,6 +8,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdL
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabListConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
@@ -20,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-@DescribedCloudExecutor(name = "SyncProxy")
+@DescribedCloudExecutor(name = "SyncProxy", priority = ExecutorPriority.LAST)
 public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3SyncProxy() {
@@ -64,7 +65,7 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
                                 }).collect(Collectors.toList())
                 )
                 .append("tabListConfigurations", cloudSystem.getTabListConfigurations())
-                .append("ingameServiceStartStopMessages", true);
+                .append("ingameServiceStartStopMessages", cloudSystem.getConfig().shouldNotifyServerUpdates());
 
         Documents.jsonStorage().write(Documents.newDocument().append("config", document), this.config(directory));
 
@@ -113,6 +114,8 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
         cloudSystem.setMessage(MessageType.LOGIN_NETWORK_FULL, messages.getString("player-login-full-server"));
         cloudSystem.setMessage(MessageType.SERVICE_STARTING, messages.getString("service-start"));
         cloudSystem.setMessage(MessageType.SERVICE_STOPPING, messages.getString("service-stop"));
+
+        cloudSystem.getConfig().setNotifyServerUpdates(document.getBoolean("ingameServiceStartStopMessages"));
 
         return true;
     }

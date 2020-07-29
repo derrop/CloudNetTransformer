@@ -5,11 +5,12 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Databas
 import com.github.derrop.cloudnettransformer.cloud.deserialized.player.PlayerProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-@DescribedCloudExecutor(name = "Players")
+@DescribedCloudExecutor(name = "Players", priority = ExecutorPriority.LAST)
 public class CloudNet3Players implements CloudReaderWriter {
 
     private static final String DATABASE_NAME = "cloudnet_cloud_players";
@@ -21,7 +22,7 @@ public class CloudNet3Players implements CloudReaderWriter {
         }
 
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
-        PlayerProvider playerProvider = new CloudNet3PlayerProvider(database);
+        PlayerProvider playerProvider = new CloudNet3PlayerProvider(cloudSystem, database);
 
         cloudSystem.getPlayerProvider().loadPlayers(playerProvider::insertPlayer);
 
@@ -32,7 +33,7 @@ public class CloudNet3Players implements CloudReaderWriter {
     public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
 
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
-        cloudSystem.setPlayerProvider(new CloudNet3PlayerProvider(database));
+        cloudSystem.setPlayerProvider(new CloudNet3PlayerProvider(cloudSystem, database));
 
         return true;
     }

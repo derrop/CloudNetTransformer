@@ -24,6 +24,7 @@ public class CloudSystem {
     private final Collection<StaticService> staticServices = new ArrayList<>();
     private transient PermissionUserProvider permissionUserProvider;
     private transient PlayerProvider playerProvider;
+    private CloudConfig config;
 
 
     private final Collection<ServiceTask> tasks = new ArrayList<>();
@@ -74,6 +75,14 @@ public class CloudSystem {
 
     public void setSignConfiguration(SignConfiguration signConfiguration) {
         this.signConfiguration = signConfiguration;
+    }
+
+    public CloudConfig getConfig() {
+        return this.config;
+    }
+
+    public void setConfig(CloudConfig config) {
+        this.config = config;
     }
 
     public PermissionUserProvider getPermissionUserProvider() {
