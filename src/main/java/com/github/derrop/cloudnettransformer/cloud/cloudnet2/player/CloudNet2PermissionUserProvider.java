@@ -6,6 +6,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUserProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.UserGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.player.PlayerProvider;
+import com.github.derrop.cloudnettransformer.util.StringUtils;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 
@@ -93,7 +94,8 @@ public class CloudNet2PermissionUserProvider implements PermissionUserProvider {
                     .append("name", user.getName())
                     .append("uniqueId", uuidString)
                     .append("hashedPassword", user.getHashedPassword())
-                    .append("permissions", user.getPermissions().stream().map(Permission::getName).collect(Collectors.toList()))
+                    .append("apiToken", StringUtils.randomString(32))
+                    .append("permissions", user.getPermissions().stream().filter(permission -> permission.getPotency() >= 0).map(Permission::getName).collect(Collectors.toList()))
                     .append("metaData", Documents.newDocument());
 
             users.add(userDocument);
