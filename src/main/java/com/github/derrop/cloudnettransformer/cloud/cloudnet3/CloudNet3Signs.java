@@ -75,6 +75,8 @@ public class CloudNet3Signs extends FileDownloader implements CloudReaderWriter 
 
     @Override
     public boolean read(CloudSystem cloudSystem, Path directory) {
+        cloudSystem.addExcludedServiceFiles("cloudnet-signs.jar");
+
         Path configPath = this.config(directory);
         if (!Files.exists(configPath)) {
             return false;

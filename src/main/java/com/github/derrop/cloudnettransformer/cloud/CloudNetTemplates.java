@@ -1,16 +1,17 @@
 package com.github.derrop.cloudnettransformer.cloud;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.service.TemplateDirectory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@DescribedCloudExecutor(name = "Templates")
+@DescribedCloudExecutor(name = "Templates", priority = ExecutorPriority.FIRST)
 public abstract class CloudNetTemplates implements CloudReaderWriter {
 
     protected abstract Path templatesDirectory(Path directory);

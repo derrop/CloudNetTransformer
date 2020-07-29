@@ -69,6 +69,8 @@ public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter
 
     @Override
     public boolean read(CloudSystem cloudSystem, Path directory) {
+        cloudSystem.addExcludedServiceFiles("cloudnet-bridge.jar");
+
         Path configPath = this.config(directory);
         if (!Files.exists(configPath)) {
             return false;

@@ -11,6 +11,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.login.Logi
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabListConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.*;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.StaticServiceDirectory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.SignConfiguration;
 
 import java.util.*;
@@ -175,6 +177,15 @@ public class CloudSystem {
             }
         }
         return result;
+    }
+
+    public void addExcludedServiceFiles(String... excludedFiles) {
+        for (TemplateDirectory template : this.templates) {
+            template.getExcludedFiles().addAll(Arrays.asList(excludedFiles));
+        }
+        for (StaticServiceDirectory staticService : this.staticServices) {
+            staticService.getExcludedFiles().addAll(Arrays.asList(excludedFiles));
+        }
     }
 
 }

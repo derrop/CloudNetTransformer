@@ -84,6 +84,8 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
 
     @Override
     public boolean read(CloudSystem cloudSystem, Path directory) {
+        cloudSystem.addExcludedServiceFiles("cloudnet-syncproxy.jar");
+
         Path configPath = this.config(directory);
         if (!Files.exists(configPath)) {
             return false;

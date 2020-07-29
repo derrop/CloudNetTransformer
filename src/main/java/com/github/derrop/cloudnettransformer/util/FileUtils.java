@@ -1,11 +1,9 @@
 package com.github.derrop.cloudnettransformer.util;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 
 public class FileUtils {
 
@@ -29,7 +27,23 @@ public class FileUtils {
         });
     }
 
-    public static void copyDirectory(Path sourceDirectory, Path targetDirectory) throws IOException {
+    public static void deleteFiles(Path directory, String... allowedFileNames) throws IOException {
+        if (Files.notExists(directory)) {
+            return;
+        }
+
+        Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (Arrays.asList(allowedFileNames).contains(file.getFileName().toString())) {
+                    Files.delete(file);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    public static void copyDirectory(Path sourceDirectory, Path targetDirectory, String... excludedFileNames) throws IOException {
         if (!Files.exists(sourceDirectory)) {
             return;
         }
@@ -47,7 +61,10 @@ public class FileUtils {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Files.copy(file, targetDirectory.resolve(sourceDirectory.relativize(file)));
+                if (Arrays.asList(excludedFileNames).contains(file.getFileName().toString())) {
+                    return FileVisitResult.CONTINUE;
+                }
+                Files.copy(file, targetDirectory.resolve(sourceDirectory.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
                 return FileVisitResult.CONTINUE;
             }
         });

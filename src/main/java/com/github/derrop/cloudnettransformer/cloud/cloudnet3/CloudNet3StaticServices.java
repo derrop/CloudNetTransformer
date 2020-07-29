@@ -1,16 +1,17 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.service.StaticServiceDirectory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.StaticServiceDirectory;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@DescribedCloudExecutor(name = "StaticServices")
+@DescribedCloudExecutor(name = "StaticServices", priority = ExecutorPriority.FIRST)
 public class CloudNet3StaticServices implements CloudReaderWriter {
 
     private Path servicesDirectory(Path directory) {
