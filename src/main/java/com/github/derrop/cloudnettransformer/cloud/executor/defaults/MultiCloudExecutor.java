@@ -52,6 +52,10 @@ public class MultiCloudExecutor implements CloudExecutor {
         this.executors.sort(Comparator.comparingInt(value -> value.getDescription().priority()));
 
         for (ExecutorContainer reader : this.executors) {
+            if (!reader.hasType(type)) {
+                continue;
+            }
+
             System.out.println("Executing '" + reader.getName() + "' as " + type + "...");
             if (!reader.getExecutor().execute(type, cloudSystem, directory)) {
                 System.err.println("Failed to execute '" + reader.getName() + "'");

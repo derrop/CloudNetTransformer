@@ -2,6 +2,9 @@ package com.github.derrop.cloudnettransformer.cloud.executor.defaults;
 
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
+
+import java.util.Arrays;
 
 public class ExecutorContainer {
 
@@ -19,6 +22,10 @@ public class ExecutorContainer {
 
     public DescribedCloudExecutor getDescription() {
         return this.description;
+    }
+
+    public boolean hasType(ExecutorType type) {
+        return Arrays.stream(this.description.types()).anyMatch(allowedType -> allowedType == type);
     }
 
     public String getName() {
