@@ -1,7 +1,5 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet3.database;
 
-import com.github.derrop.cloudnettransformer.cloud.cloudnet3.database.CloudNet3H2DatabaseProvider;
-import com.github.derrop.cloudnettransformer.cloud.cloudnet3.database.CloudNet3MySQLDatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
@@ -17,7 +15,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ, priority = ExecutorPriority.FIRST)
+@DescribedCloudExecutor(name = "Database", priority = ExecutorPriority.FIRST)
 public class CloudNet3Database implements CloudExecutor {
 
     private static final Map<String, Class<? extends DatabaseProvider>> AVAILABLE_PROVIDERS = new HashMap<>();
@@ -30,20 +28,22 @@ public class CloudNet3Database implements CloudExecutor {
     @Override
     public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         Path registryFile = directory.resolve("local").resolve("registry");
-        if (!Files.exists(registryFile)) {
-            return false;
+
+        String providerName = "h2";
+
+        if (Files.exists(registryFile)) {
+            Document registry = Documents.jsonStorage().read(registryFile);
+            if (!registry.contains("entries")) {
+                return false;
+            }
+            Document registryEntries = registry.getDocument("entries");
+            if (registryEntries == null || !registryEntries.contains("database_provider")) {
+                return false;
+            }
+
+            providerName = registryEntries.getString("database_provider");
         }
 
-        Document registry = Documents.jsonStorage().read(registryFile);
-        if (!registry.contains("entries")) {
-            return false;
-        }
-        Document registryEntries = registry.getDocument("entries");
-        if (registryEntries == null || !registryEntries.contains("database_provider")) {
-            return false;
-        }
-
-        String providerName = registryEntries.getString("database_provider");
         if (providerName == null) {
             return false;
         }

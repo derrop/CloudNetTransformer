@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet3.database;
 import com.github.derrop.cloudnettransformer.util.ThrowableFunction;
 import com.google.common.base.Preconditions;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
@@ -20,10 +21,9 @@ public class CloudNet3H2DatabaseProvider extends CloudNet3SQLDatabaseProvider {
     }
 
     @Override
-    public boolean init() {
+    public boolean init() throws IOException {
         if (Files.notExists(this.h2File.getParent())) {
-            System.err.println("H2 database file not found");
-            return false;
+            Files.createDirectories(this.h2File.getParent());
         }
 
         try {

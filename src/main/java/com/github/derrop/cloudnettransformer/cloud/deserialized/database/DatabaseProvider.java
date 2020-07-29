@@ -1,10 +1,11 @@
 package com.github.derrop.cloudnettransformer.cloud.deserialized.database;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public interface DatabaseProvider {
 
-    boolean init();
+    boolean init() throws IOException;
 
     Database getDatabase(String name);
 

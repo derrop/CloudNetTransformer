@@ -1,8 +1,6 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet2.database;
 
 import com.github.derrop.cloudnettransformer.Constants;
-import com.github.derrop.cloudnettransformer.cloud.cloudnet2.database.CloudNet2FileDatabaseProvider;
-import com.github.derrop.cloudnettransformer.cloud.cloudnet2.database.CloudNet2NitriteDatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
@@ -14,18 +12,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ, priority = ExecutorPriority.FIRST)
+@DescribedCloudExecutor(name = "Database", priority = ExecutorPriority.FIRST)
 public class CloudNet2Database implements CloudExecutor {
 
     @Override
     public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         Path databaseDirectory = directory.resolve(Constants.MASTER_DIRECTORY).resolve("database");
+        boolean nitrite;
         if (!Files.exists(databaseDirectory) || !Files.isDirectory(databaseDirectory)) {
-            return false;
+            nitrite = false;
+            Files.createDirectories(databaseDirectory);
+        } else {
+            Path nitriteUpgradeFile = databaseDirectory.resolve(".upgraded_nitrite");
+            nitrite = Files.exists(nitriteUpgradeFile) && Files.isDirectory(nitriteUpgradeFile);
         }
-
-        Path nitriteUpgradeFile = databaseDirectory.resolve(".upgraded_nitrite");
-        boolean nitrite = Files.exists(nitriteUpgradeFile) && Files.isDirectory(nitriteUpgradeFile);
 
         DatabaseProvider databaseProvider = nitrite ? new CloudNet2NitriteDatabaseProvider(databaseDirectory.resolve("cloudnet.db")) : new CloudNet2FileDatabaseProvider(databaseDirectory);
         if (!databaseProvider.init()) {
