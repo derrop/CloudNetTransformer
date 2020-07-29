@@ -1,7 +1,7 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.service.StaticService;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.StaticServiceDirectory;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 
@@ -25,7 +25,7 @@ public class CloudNet3StaticServices implements CloudReaderWriter {
 
         Path baseDirectory = this.servicesDirectory(directory);
 
-        for (StaticService staticService : cloudSystem.getStaticServices()) {
+        for (StaticServiceDirectory staticService : cloudSystem.getStaticServices()) {
             Path serviceDirectory = baseDirectory.resolve(staticService.getTask() + "-" + staticService.getId());
 
             staticService.copyTo(serviceDirectory);
@@ -63,7 +63,7 @@ public class CloudNet3StaticServices implements CloudReaderWriter {
                     continue;
                 }
 
-                cloudSystem.getStaticServices().add(new StaticService(task, id, serverDirectory));
+                cloudSystem.getStaticServices().add(new StaticServiceDirectory(task, id, serverDirectory));
             }
         }
 

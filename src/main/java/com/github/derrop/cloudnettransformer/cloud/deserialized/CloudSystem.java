@@ -21,14 +21,15 @@ public class CloudSystem {
 
     private SignConfiguration signConfiguration;
     private PermissionConfiguration permissionConfiguration;
-    private final Collection<StaticService> staticServices = new ArrayList<>();
     private transient PermissionUserProvider permissionUserProvider;
     private transient PlayerProvider playerProvider;
+    private final Collection<StaticServiceDirectory> staticServices = new ArrayList<>();
     private CloudConfig config;
 
 
     private final Collection<ServiceTask> tasks = new ArrayList<>();
     private final Collection<ServiceGroup> groups = new ArrayList<>();
+    private final Collection<TemplateDirectory> templates = new ArrayList<>();
     private transient DatabaseProvider databaseProvider;
 
     private final Collection<FallbackConfiguration> fallbackConfigurations = new ArrayList<>();
@@ -117,7 +118,11 @@ public class CloudSystem {
         this.databaseProvider = databaseProvider;
     }
 
-    public Collection<StaticService> getStaticServices() {
+    public Collection<TemplateDirectory> getTemplates() {
+        return this.templates;
+    }
+
+    public Collection<StaticServiceDirectory> getStaticServices() {
         return this.staticServices;
     }
 

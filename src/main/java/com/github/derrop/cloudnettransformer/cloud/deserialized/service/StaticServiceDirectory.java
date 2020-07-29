@@ -5,13 +5,13 @@ import com.github.derrop.cloudnettransformer.util.FileUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class StaticService {
+public class StaticServiceDirectory {
 
     private final String task;
     private final int id;
     private final Path directory;
 
-    public StaticService(String task, int id, Path directory) {
+    public StaticServiceDirectory(String task, int id, Path directory) {
         this.task = task;
         this.id = id;
         this.directory = directory;
