@@ -6,6 +6,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
@@ -16,7 +17,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ)
+@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ, priority = ExecutorPriority.FIRST)
 public class CloudNet3Database implements CloudExecutor {
 
     private static final Map<String, Class<? extends DatabaseProvider>> AVAILABLE_PROVIDERS = new HashMap<>();

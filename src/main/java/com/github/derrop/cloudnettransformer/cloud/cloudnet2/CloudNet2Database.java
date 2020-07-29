@@ -7,13 +7,14 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ)
+@DescribedCloudExecutor(name = "Database", types = ExecutorType.READ, priority = ExecutorPriority.FIRST)
 public class CloudNet2Database implements CloudExecutor {
 
     @Override

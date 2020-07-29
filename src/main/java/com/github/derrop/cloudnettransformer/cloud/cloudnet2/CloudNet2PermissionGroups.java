@@ -3,8 +3,8 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionConfiguration;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionGroup;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionGroup;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-@DescribedCloudExecutor(name = "Permissions")
-public class CloudNet2Permissions implements CloudReaderWriter {
+@DescribedCloudExecutor(name = "PermissionGroups")
+public class CloudNet2PermissionGroups implements CloudReaderWriter {
 
     private Path config(Path directory) {
         return directory.resolve(Constants.MASTER_DIRECTORY).resolve("local").resolve("perms.yml");

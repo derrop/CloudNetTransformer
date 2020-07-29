@@ -1,4 +1,4 @@
-package com.github.derrop.cloudnettransformer.cloud.deserialized.permissions;
+package com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group;
 
 import java.util.Collection;
 

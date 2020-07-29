@@ -2,8 +2,8 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionConfiguration;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionGroup;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionGroup;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;

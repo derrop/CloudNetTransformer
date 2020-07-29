@@ -3,7 +3,9 @@ package com.github.derrop.cloudnettransformer.cloud.deserialized;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.PermissionConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUserProvider;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.player.PlayerProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.FallbackConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.login.LoginConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdConfiguration;
@@ -19,7 +21,10 @@ public class CloudSystem {
 
     private SignConfiguration signConfiguration;
     private PermissionConfiguration permissionConfiguration;
-    private transient DatabaseProvider databaseProvider;
+    private PermissionUserProvider permissionUserProvider;
+    private PlayerProvider playerProvider;
+    private DatabaseProvider databaseProvider;
+
 
     private final Collection<ServiceTask> tasks = new ArrayList<>();
     private final Collection<ServiceGroup> groups = new ArrayList<>();
@@ -68,6 +73,22 @@ public class CloudSystem {
 
     public void setSignConfiguration(SignConfiguration signConfiguration) {
         this.signConfiguration = signConfiguration;
+    }
+
+    public PermissionUserProvider getPermissionUserProvider() {
+        return this.permissionUserProvider;
+    }
+
+    public void setPermissionUserProvider(PermissionUserProvider permissionUserProvider) {
+        this.permissionUserProvider = permissionUserProvider;
+    }
+
+    public PlayerProvider getPlayerProvider() {
+        return this.playerProvider;
+    }
+
+    public void setPlayerProvider(PlayerProvider playerProvider) {
+        this.playerProvider = playerProvider;
     }
 
     public PermissionConfiguration getPermissionConfiguration() {
