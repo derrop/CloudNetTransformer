@@ -44,8 +44,12 @@ public class CloudNet2Services implements CloudReaderWriter {
     }
 
     private Collection<Document> writeWrapper(CloudSystem cloudSystem) {
-        // TODO
-        return Collections.emptyList();
+        // TODO create the admin user?
+        return Collections.singletonList(Documents.newDocument()
+                .append("id", cloudSystem.getConfig().getComponentName())
+                .append("hostName", cloudSystem.getConfig().getIp())
+                .append("user", "admin")
+        );
     }
 
     private Collection<Document> writeProxyGroups(CloudSystem cloudSystem) {
@@ -213,7 +217,7 @@ public class CloudNet2Services implements CloudReaderWriter {
     }
 
     private void readWrapper(CloudSystem cloudSystem, Collection<Document> wrapper) {
-        // TODO
+        // this transformer doesn't support a multi wrapper setup
     }
 
     private void readProxyGroups(CloudSystem cloudSystem, Collection<Document> proxyGroups) {
