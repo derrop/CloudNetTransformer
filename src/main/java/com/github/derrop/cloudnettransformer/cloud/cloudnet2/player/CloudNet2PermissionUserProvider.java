@@ -31,7 +31,7 @@ public class CloudNet2PermissionUserProvider implements PermissionUserProvider {
     }
 
     @Override
-    public long getUserCount() {
+    public long getRegisteredCount() {
         return this.database.getDocumentsCount();
     }
 

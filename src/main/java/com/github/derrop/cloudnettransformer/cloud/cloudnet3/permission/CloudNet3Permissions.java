@@ -1,9 +1,11 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet3.permission;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionGroup;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUserProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
@@ -21,8 +23,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@DescribedCloudExecutor(name = "Permissions")
+@DescribedCloudExecutor(name = "PermissionGroups")
 public class CloudNet3Permissions extends FileDownloader implements CloudReaderWriter {
+
+    private static final String DATABASE_NAME = "cloudnet_permission_users";
 
     public CloudNet3Permissions() {
         super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-cloudperms/build/libs/cloudnet-cloudperms.jar", "modules/cloudnet-cloudperms.jar");
@@ -87,6 +91,13 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
 
         Documents.jsonStorage().write(Documents.newDocument().append("groups", groups), this.config(directory));
 
+        if (cloudSystem.getPermissionUserProvider() != null) {
+            Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
+            PermissionUserProvider permissionUserProvider = new CloudNet3PermissionUserProvider(this, database);
+
+            cloudSystem.getPermissionUserProvider().loadUsers(permissionUserProvider::insertUser);
+        }
+
         return true;
     }
 
@@ -106,17 +117,9 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
         for (JsonElement element : array) {
             Document group = Documents.newDocument(element.getAsJsonObject());
 
-            Collection<Permission> permissions = new ArrayList<>();
-            this.asPermissions(permissions, null, group.getJsonArray("permissions"));
-
-            Document groupPermissions = group.getDocument("groupPermissions");
-            for (String targetGroup : groupPermissions.keys()) {
-                this.asPermissions(permissions, targetGroup, groupPermissions.getJsonArray(targetGroup));
-            }
-
             groups.add(new PermissionGroup(
                     group.getString("name"),
-                    permissions,
+                    this.getAllPermissions(group),
                     group.get("groups", TypeToken.getParameterized(Collection.class, String.class).getType()),
                     group.getString("prefix"),
                     group.getString("suffix"),
@@ -132,7 +135,23 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
 
         cloudSystem.setPermissionConfiguration(new PermissionConfiguration(enabled, groups));
 
+        Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
+        cloudSystem.setPermissionUserProvider(new CloudNet3PermissionUserProvider(this, database));
+
         return true;
+    }
+
+    protected Collection<Permission> getAllPermissions(Document document) {
+        Collection<Permission> permissions = new ArrayList<>();
+
+        this.asPermissions(permissions, null, document.getDocuments("permissions"));
+
+        Document groupPermissions = document.getDocument("groupPermissions");
+        for (String targetGroup : groupPermissions.keys()) {
+            this.asPermissions(permissions, targetGroup, groupPermissions.getDocuments(targetGroup));
+        }
+
+        return permissions;
     }
 
     private Permission asPermission(String targetGroup, Document document) {
@@ -144,13 +163,13 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
         );
     }
 
-    private void asPermissions(Collection<Permission> permissions, String targetGroup, JsonArray array) {
-        for (JsonElement element : array) {
-            permissions.add(this.asPermission(targetGroup, Documents.newDocument(element)));
+    private void asPermissions(Collection<Permission> permissions, String targetGroup, Collection<Document> inputPermissions) {
+        for (Document document : inputPermissions) {
+            permissions.add(this.asPermission(targetGroup, document));
         }
     }
 
-    private Document asJson(Permission permission) {
+    protected Document asJson(Permission permission) {
         return Documents.newDocument()
                 .append("name", permission.getName())
                 .append("potency", permission.getPotency())

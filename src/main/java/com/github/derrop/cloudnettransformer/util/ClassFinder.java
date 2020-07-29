@@ -32,7 +32,7 @@ public class ClassFinder<T> {
         Collection<T> out = new ArrayList<>();
 
         try {
-            for (ClassPath.ClassInfo classInfo : ClassPath.from(super.getClass().getClassLoader()).getTopLevelClasses(this.prefix)) {
+            for (ClassPath.ClassInfo classInfo : ClassPath.from(super.getClass().getClassLoader()).getTopLevelClassesRecursive(this.prefix)) {
                 Class<?> discovered = classInfo.load();
                 if (this.superClass == null || this.superClass.isAssignableFrom(discovered)) {
                     T t = (T) discovered.getDeclaredConstructor().newInstance();

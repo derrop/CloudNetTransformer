@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 public interface PermissionUserProvider {
 
-    long getUserCount();
+    long getRegisteredCount();
 
     void loadUsers(Consumer<PermissionUser> consumer);
 
