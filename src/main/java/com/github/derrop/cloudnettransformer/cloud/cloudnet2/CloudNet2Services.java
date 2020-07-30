@@ -126,7 +126,7 @@ public class CloudNet2Services implements CloudReaderWriter {
             cloudSystem.getFallbackConfigurations().stream().filter(config -> config.getTargetGroup().equals(task.getName())).findFirst()
                     .ifPresent(fallbackConfiguration -> this.writeFallbackConfiguration(proxyConfig, fallbackConfiguration));
 
-            document.append("settings", task.getProperties());
+            document.append("proxyConfig", proxyConfig).append("settings", task.getProperties());
 
             proxyGroups.add(document);
         }
