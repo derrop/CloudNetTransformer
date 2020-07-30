@@ -45,6 +45,10 @@ public class CloudNet3StaticServices implements CloudReaderWriter {
 
         try (DirectoryStream<Path> groupStream = Files.newDirectoryStream(baseDirectory)) {
             for (Path serverDirectory : groupStream) {
+                if (!Files.isDirectory(serverDirectory)) {
+                    continue;
+                }
+
                 String service = serverDirectory.getFileName().toString();
 
                 int index = service.lastIndexOf('-');

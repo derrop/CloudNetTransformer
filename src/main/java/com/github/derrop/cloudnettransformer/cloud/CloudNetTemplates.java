@@ -40,6 +40,9 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
             for (Path prefixDirectory : prefixStream) {
                 try (DirectoryStream<Path> nameStream = Files.newDirectoryStream(prefixDirectory)) {
                     for (Path nameDirectory : nameStream) {
+                        if (!Files.isDirectory(prefixDirectory) || !Files.isDirectory(nameDirectory)) {
+                            continue;
+                        }
                         String group = prefixDirectory.getFileName().toString();
                         String name = nameDirectory.getFileName().toString();
 

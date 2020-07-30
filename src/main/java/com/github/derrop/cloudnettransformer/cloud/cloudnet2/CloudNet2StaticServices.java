@@ -48,6 +48,10 @@ public class CloudNet2StaticServices implements CloudReaderWriter {
             for (Path groupDirectory : groupStream) {
                 try (DirectoryStream<Path> serverStream = Files.newDirectoryStream(groupDirectory)) {
                     for (Path serverDirectory : serverStream) {
+                        if (!Files.isDirectory(groupDirectory) || !Files.isDirectory(serverDirectory)) {
+                            continue;
+                        }
+
                         String group = groupDirectory.getFileName().toString();
                         String server = serverDirectory.getFileName().toString();
 
