@@ -94,7 +94,8 @@ public class CloudNet2Services implements CloudReaderWriter {
                     .append("proxyVersion", "BUNGEECORD")
                     .append("startPort", task.getStartPort())
                     .append("startup", task.getMinServices())
-                    .append("memory", task.getMaxMemory());
+                    .append("memory", task.getMaxMemory())
+                    .append("proxyGroupMode", task.isStaticServices() ? "STATIC" : "DYNAMIC");
 
             Document proxyConfig = Documents.newDocument().append("customPayloadFixer", false);
 

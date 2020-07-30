@@ -38,6 +38,7 @@ public class CloudNet2Config implements CloudReaderWriter {
 
         master.append("general", Documents.newDocument()
                 .append("auto-update", false)
+                .append("server-name-splitter", "-")
                 .append("dynamicservices", false)
                 .append("notify-service", config.shouldNotifyServerUpdates())
                 .append("disabled-modules", cloudSystem.getPermissionConfiguration().isEnabled() ? Collections.emptyList() : Collections.singletonList("CloudNet-Service-PermissionModule"))
