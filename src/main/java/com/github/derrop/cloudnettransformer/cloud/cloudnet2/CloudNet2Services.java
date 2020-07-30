@@ -189,7 +189,9 @@ public class CloudNet2Services implements CloudReaderWriter {
         Document dynamicFallback = Documents.newDocument();
 
         Collection<Document> fallbacks = new ArrayList<>(fallbackConfiguration.getFallbacks().size());
-        fallbackConfiguration.getFallbacks().stream().sorted(Comparator.comparingInt(Fallback::getPriority))
+        fallbackConfiguration.getFallbacks().stream()
+                .sorted(Comparator.comparingInt(Fallback::getPriority))
+                .filter(fallback -> fallback.getPermission() != null)
                 .forEach(fallback -> fallbacks.add(Documents.newDocument().append("group", fallback.getTask()).append("permission", fallback.getPermission())));
 
         dynamicFallback
