@@ -1,4 +1,4 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet2.files;
 
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;

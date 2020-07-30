@@ -1,4 +1,4 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet3.service;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.StaticServiceDirectory;

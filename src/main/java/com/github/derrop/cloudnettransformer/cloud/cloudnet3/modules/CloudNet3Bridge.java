@@ -1,4 +1,4 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet3.modules;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;

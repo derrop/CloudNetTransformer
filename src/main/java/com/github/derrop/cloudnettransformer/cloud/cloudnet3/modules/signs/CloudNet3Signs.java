@@ -1,4 +1,4 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet3.signs;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet3.modules.signs;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
