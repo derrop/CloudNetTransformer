@@ -1,8 +1,8 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3.database;
 
+import com.github.derrop.cloudnettransformer.util.ThrowableFunction;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
-import com.github.derrop.cloudnettransformer.util.ThrowableFunction;
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -25,7 +25,7 @@ public class CloudNet3MySQLDatabaseProvider extends CloudNet3SQLDatabaseProvider
 
     @Override
     public boolean init() {
-        Path path = this.directory.resolve("modules").resolve("CloudNet-Database-MySQL");
+        Path path = this.directory.resolve("modules").resolve("CloudNet-Database-MySQL").resolve("config.json");
         Document config = Documents.jsonStorage().read(path);
 
         Collection<Document> addresses = config.getDocuments("addresses");
