@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
@@ -17,7 +18,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -159,18 +159,18 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
 
         cloudSystem.setMessage(MessageType.SIGN_SERVER_CONNECTING, ""); // CloudNet 2 doesn't have the connecting message
 
-        // TODO: Not for Lobby, but for every group with the groupMode LOBBY or STATIC_LOBBY
-        cloudSystem.setSignConfiguration(new SignConfiguration(
-                Collections.singletonList(
-                        new GroupSignConfiguration(
-                                "Lobby",
-                                switchToSearchingWhenFull, knockbackDistance, knockbackStrength,
-                                layouts, globalLayout,
-                                searchLayout, searchLayout
-                        )
-                ),
-                cloudSystem.getMessages(MessageCategory.SIGNS)
-        ));
+        Collection<GroupSignConfiguration> configurations = new ArrayList<>();
+        for (ServiceGroup group : cloudSystem.getGroups()) {
+            if (group.isSupportingSigns()) {
+                configurations.add(new GroupSignConfiguration(
+                        group.getName(),
+                        switchToSearchingWhenFull, knockbackDistance, knockbackStrength,
+                        layouts, globalLayout,
+                        searchLayout, searchLayout
+                ));
+            }
+        }
+        cloudSystem.setSignConfiguration(new SignConfiguration(configurations, cloudSystem.getMessages(MessageCategory.SIGNS)));
 
         return true;
     }

@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet3.signs;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
@@ -130,6 +131,14 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         outMessages.put(MessageType.SIGN_ALREADY_EXISTS, messages.get("command-cloudsign-sign-already-exist"));
 
         cloudSystem.setSignConfiguration(new SignConfiguration(configurations, outMessages));
+
+        for (GroupSignConfiguration configuration : configurations) {
+            for (ServiceGroup group : cloudSystem.getGroups()) {
+                if (group.getName().equals(configuration.getTargetGroup())) {
+                    group.setSupportsSigns(true);
+                }
+            }
+        }
 
         return true;
     }

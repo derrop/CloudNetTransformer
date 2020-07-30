@@ -126,14 +126,18 @@ public class CloudNet2Groups implements CloudReaderWriter {
                         Documents.newDocument()
                 ));
 
-                cloudSystem.getGroups().add(new ServiceGroup(
+
+                ServiceGroup serviceGroup = new ServiceGroup(
                         name,
                         Collections.singletonList(new ServiceTemplate("local", name, "globaltemplate")),
                         CloudNet2Utils.asInclusions(globalTemplate),
                         Collections.emptyList(),
                         globalTemplate.get("processPreParameters", TypeToken.getParameterized(Collection.class, String.class).getType()),
                         Collections.emptyList()
-                ));
+                );
+                serviceGroup.setSupportsSigns(groupMode.equals("LOBBY") || groupMode.equals("STATIC_LOBBY"));
+
+                cloudSystem.getGroups().add(serviceGroup);
 
             }
         }

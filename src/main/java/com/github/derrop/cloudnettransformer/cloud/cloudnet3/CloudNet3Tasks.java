@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.reflect.TypeToken;
@@ -16,7 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-@DescribedCloudExecutor(name = "Tasks")
+@DescribedCloudExecutor(name = "Tasks", priority = ExecutorPriority.FIRST)
 public class CloudNet3Tasks implements CloudReaderWriter {
 
     private Path tasksDirectory(Path directory) {
@@ -62,13 +63,7 @@ public class CloudNet3Tasks implements CloudReaderWriter {
                     )
                     .append("startPort", task.getStartPort())
                     .append("minServiceCount", task.getMinServices())
-                    .append("includes", task.getInclusions().stream().map(inclusion -> {
-                        Document inclusionDocument = Documents.newDocument().append("destination", inclusion.getTarget()).append("url", inclusion.getUrl());
-                        if (!inclusion.getHeaders().isEmpty()) {
-                            inclusionDocument.append("properties", Documents.newDocument("httpHeaders", inclusion.getHeaders()));
-                        }
-                        return inclusionDocument;
-                    }).collect(Collectors.toList()))
+                    .append("includes", task.getInclusions().stream().map(CloudNet3Utils::inclusionToDocument).collect(Collectors.toList()))
                     .append("templates", task.getTemplates())
                     .append("deployments", task.getDeployments())
                     .append("properties", Documents.newDocument().append("smartConfig", Documents.newDocument()
@@ -122,24 +117,7 @@ public class CloudNet3Tasks implements CloudReaderWriter {
                 cloudSystem.getTasks().add(new ServiceTask(
                         task.getString("name"),
                         task.get("templates", TypeToken.getParameterized(Collection.class, ServiceTemplate.class).getType()),
-                        task.getDocuments("includes").stream()
-                                .map(document -> {
-                                    ServiceInclusion inclusion = new ServiceInclusion(document.getString("destination"), document.getString("url"));
-                                    Document inclusionProperties = document.getDocument("properties");
-                                    if (inclusionProperties != null) {
-                                        Document headers = inclusionProperties.getDocument("httpHeaders");
-                                        if (headers != null) {
-                                            for (String key : headers.keys()) {
-                                                String value = headers.getString(key);
-                                                if (value != null) {
-                                                    inclusion.getHeaders().put(key, value);
-                                                }
-                                            }
-                                        }
-                                    }
-                                    return inclusion;
-                                })
-                                .collect(Collectors.toList()),
+                        task.getDocuments("includes").stream().map(CloudNet3Utils::documentToInclusion).collect(Collectors.toList()),
                         task.get("deployments", TypeToken.getParameterized(Collection.class, ServiceDeployment.class).getType()),
                         processConfig.get("jvmOptions", TypeToken.getParameterized(Collection.class, String.class).getType()),
                         task.getBoolean("maintenance"),
