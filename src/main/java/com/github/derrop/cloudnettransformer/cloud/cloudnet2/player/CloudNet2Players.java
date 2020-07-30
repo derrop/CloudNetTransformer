@@ -29,11 +29,13 @@ public class CloudNet2Players implements CloudReaderWriter {
         if (cloudSystem.getPlayerProvider() != null) {
             PlayerProvider playerProvider = new CloudNet2PlayerProvider(database);
             cloudSystem.getPlayerProvider().loadPlayers(playerProvider::insertPlayer);
+            cloudSystem.setPlayerProvider(playerProvider);
             success = true;
         }
         if (cloudSystem.getPermissionUserProvider() != null) {
             PermissionUserProvider permissionUserProvider = new CloudNet2PermissionUserProvider(cloudSystem.getPlayerProvider(), database, this.usersFile(directory));
             cloudSystem.getPermissionUserProvider().loadUsers(permissionUserProvider::insertUser);
+            cloudSystem.setPermissionUserProvider(permissionUserProvider);
             success = true;
         }
 

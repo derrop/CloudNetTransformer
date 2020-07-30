@@ -96,6 +96,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
             PermissionUserProvider permissionUserProvider = new CloudNet3PermissionUserProvider(this, database);
 
             cloudSystem.getPermissionUserProvider().loadUsers(permissionUserProvider::insertUser);
+            cloudSystem.setPermissionUserProvider(permissionUserProvider);
         }
 
         return true;

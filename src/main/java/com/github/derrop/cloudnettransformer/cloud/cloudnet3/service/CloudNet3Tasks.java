@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet3.service;
 
 import com.github.derrop.cloudnettransformer.cloud.cloudnet3.CloudNet3Utils;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
@@ -92,7 +93,7 @@ public class CloudNet3Tasks implements CloudReaderWriter {
             for (Path path : stream) {
                 Document task = Documents.jsonStorage().read(path);
                 if (!task.getString("runtime").equals("jvm")) {
-                    System.err.println("Runtime '" + task.getString("runtime") + "' is not supported");
+                    cloudSystem.addNote(UserNote.normal("Runtime '" + task.getString("runtime") + "' of the task '" + task.getString("name") + "' is not supported, the task will not be transformed"));
                     continue;
                 }
 
@@ -102,7 +103,7 @@ public class CloudNet3Tasks implements CloudReaderWriter {
                 }
                 ServiceEnvironment environment = processConfig.get("environment", ServiceEnvironment.class);
                 if (environment == null) {
-                    System.err.println("Environment '" + processConfig.getString("environment") + "' is not supported");
+                    cloudSystem.addNote(UserNote.normal("Environment '" + processConfig.getString("environment") + "' of the task '" + task.getString("name") + "' is not supported, the task will not be transformed"));
                     continue;
                 }
 

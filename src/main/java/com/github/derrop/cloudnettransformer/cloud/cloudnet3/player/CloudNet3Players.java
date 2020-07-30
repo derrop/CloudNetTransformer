@@ -25,6 +25,7 @@ public class CloudNet3Players implements CloudReaderWriter {
         PlayerProvider playerProvider = new CloudNet3PlayerProvider(cloudSystem, database);
 
         cloudSystem.getPlayerProvider().loadPlayers(playerProvider::insertPlayer);
+        cloudSystem.setPlayerProvider(playerProvider);
 
         return true;
     }

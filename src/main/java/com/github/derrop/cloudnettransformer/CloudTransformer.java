@@ -2,17 +2,16 @@ package com.github.derrop.cloudnettransformer;
 
 import com.github.derrop.cloudnettransformer.cloud.CloudType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class CloudTransformer {
@@ -43,7 +42,14 @@ public class CloudTransformer {
 
         CloudSystem cloudSystem = new CloudSystem();
         sourceType.getExecutor().execute(ExecutorType.READ, cloudSystem, sourceDirectory);
-        targetType.getExecutor().execute(ExecutorType.WRITE, cloudSystem, sourceDirectory);
+        targetType.getExecutor().execute(ExecutorType.WRITE, cloudSystem, targetDirectory);
+
+        if (!cloudSystem.getNotes().isEmpty()) {
+            System.out.println("Notes (you can still read them later in the transformerNotes.txt in the output directory)");
+            Collection<String> notes = cloudSystem.getNotes().stream().map(UserNote::format).collect(Collectors.toList());
+            notes.forEach(System.out::println);
+            Files.write(targetDirectory.resolve("transformerNotes.txt"), notes, StandardOpenOption.CREATE);
+        }
     }
 
     public void askConsole() throws IOException {

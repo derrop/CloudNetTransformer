@@ -10,6 +10,7 @@ import com.github.derrop.cloudnettransformer.util.StringUtils;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,10 +84,10 @@ public class CloudNet2PermissionUserProvider implements PermissionUserProvider {
         String uuidString = user.getUniqueId().toString();
 
         if (this.playerProvider == null || !this.playerProvider.containsPlayer(user.getUniqueId())) {
-            Document document = Documents.jsonStorage().read(this.usersFile);
+            Document document = Files.exists(this.usersFile) ? Documents.jsonStorage().read(this.usersFile) : null;
 
-            if (!document.contains("users")) {
-                return;
+            if (document == null || !document.contains("users")) {
+                document = Documents.newDocument("users", new ArrayList<>());
             }
 
             Collection<Document> users = document.getDocuments("users");
@@ -145,7 +146,15 @@ public class CloudNet2PermissionUserProvider implements PermissionUserProvider {
 
     @Override
     public boolean containsUser(UUID uniqueId) {
-        return this.database.contains(uniqueId.toString());
+        if (this.database.contains(uniqueId.toString())) {
+            return true;
+        }
+        if (Files.notExists(this.usersFile)) {
+            return false;
+        }
+        Document document = Documents.jsonStorage().read(this.usersFile);
+        Collection<Document> users = document.getDocuments("users");
+        return users.stream().anyMatch(user -> user.get("uniqueId", UUID.class).equals(uniqueId));
     }
 
     @Override

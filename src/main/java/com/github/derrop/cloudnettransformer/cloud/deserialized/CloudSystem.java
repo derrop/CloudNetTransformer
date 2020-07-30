@@ -42,6 +42,7 @@ public class CloudSystem {
     private final Collection<LoginConfiguration> loginConfigurations = new ArrayList<>();
 
     private final Map<MessageType, String> messages = new HashMap<>();
+    private final Collection<UserNote> notes = new ArrayList<>();
 
     public CloudSystem() {
         for (MessageType type : MessageType.values()) {
@@ -140,6 +141,14 @@ public class CloudSystem {
 
     public Collection<ServiceGroup> getGroups() {
         return this.groups;
+    }
+
+    public void addNote(UserNote note) {
+        this.notes.add(note);
+    }
+
+    public Collection<UserNote> getNotes() {
+        return this.notes;
     }
 
     public Collection<FallbackConfiguration> getFallbackConfigurations() {
