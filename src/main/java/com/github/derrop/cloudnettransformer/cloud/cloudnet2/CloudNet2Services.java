@@ -184,7 +184,7 @@ public class CloudNet2Services implements CloudReaderWriter {
     public boolean read(CloudSystem cloudSystem, Path directory) {
 
         Path configPath = this.config(directory);
-        if (!Files.exists(configPath)) {
+        if (Files.notExists(configPath)) {
             return false;
         }
 

@@ -79,7 +79,7 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         cloudSystem.addExcludedServiceFiles("cloudnet-signs.jar");
 
         Path configPath = this.config(directory);
-        if (!Files.exists(configPath)) {
+        if (Files.notExists(configPath)) {
             return false;
         }
 

@@ -104,7 +104,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
     @Override
     public boolean read(CloudSystem cloudSystem, Path directory) {
         Path configPath = this.config(directory);
-        if (!Files.exists(configPath)) {
+        if (Files.notExists(configPath)) {
             return false;
         }
 

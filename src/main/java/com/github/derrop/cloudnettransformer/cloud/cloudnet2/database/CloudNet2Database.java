@@ -19,7 +19,7 @@ public class CloudNet2Database implements CloudExecutor {
     public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         Path databaseDirectory = directory.resolve(Constants.MASTER_DIRECTORY).resolve("database");
         boolean nitrite;
-        if (!Files.exists(databaseDirectory) || !Files.isDirectory(databaseDirectory)) {
+        if (Files.notExists(databaseDirectory) || !Files.isDirectory(databaseDirectory)) {
             nitrite = false;
             Files.createDirectories(databaseDirectory);
         } else {

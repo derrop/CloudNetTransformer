@@ -93,7 +93,7 @@ public class CloudNet2PermissionGroups implements CloudReaderWriter {
     @Override
     public boolean read(CloudSystem cloudSystem, Path directory) {
         Path configPath = this.config(directory);
-        if (!Files.exists(configPath)) {
+        if (Files.notExists(configPath)) {
             return false;
         }
 

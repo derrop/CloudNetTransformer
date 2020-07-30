@@ -1,9 +1,9 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet2.database;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
+import com.github.derrop.cloudnettransformer.util.FileUtils;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
-import com.github.derrop.cloudnettransformer.util.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,7 @@ public class CloudNet2FileDatabase implements Database {
     @Override
     public boolean update(String key, Document document) {
         Path path = this.directory.resolve(key);
-        if (!Files.exists(path)) {
+        if (Files.notExists(path)) {
             return false;
         }
 
@@ -73,10 +73,7 @@ public class CloudNet2FileDatabase implements Database {
     @Override
     public List<Document> get(String fieldName, Object fieldValue) {
         return new ArrayList<>(this.filter((key, document) -> {
-            if (Objects.equals(document.getString(fieldName), fieldValue)) {
-                return true;
-            }
-            return false;
+            return Objects.equals(document.getString(fieldName), fieldValue);
         }).values());
     }
 

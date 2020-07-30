@@ -40,7 +40,7 @@ public class CloudNet2StaticServices implements CloudReaderWriter {
     public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
         Path baseDirectory = this.serversDirectory(directory);
 
-        if (!Files.exists(baseDirectory)) {
+        if (Files.notExists(baseDirectory)) {
             return true;
         }
 

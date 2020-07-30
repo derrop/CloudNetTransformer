@@ -44,7 +44,7 @@ public class FileUtils {
     }
 
     public static void copyDirectory(Path sourceDirectory, Path targetDirectory, String... excludedFileNames) throws IOException {
-        if (!Files.exists(sourceDirectory)) {
+        if (Files.notExists(sourceDirectory)) {
             return;
         }
 
