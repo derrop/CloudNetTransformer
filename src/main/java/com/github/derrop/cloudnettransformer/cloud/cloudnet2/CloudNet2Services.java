@@ -10,9 +10,9 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdL
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabList;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabListConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceEnvironment;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceInclusion;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTask;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTemplate;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.TemplateInstallerType;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
@@ -61,7 +61,6 @@ public class CloudNet2Services implements CloudReaderWriter {
             }
 
             Collection<ServiceTemplate> templates = cloudSystem.getAllTemplates(task);
-            Collection<ServiceInclusion> inclusions = cloudSystem.getAllInclusions(task);
             if (templates.isEmpty()) {
                 System.err.println("Not writing ProxyGroup " + task.getName() + " because there is no template!");
                 continue;
@@ -72,20 +71,7 @@ public class CloudNet2Services implements CloudReaderWriter {
             Document document = Documents.newDocument()
                     .append("name", task.getName())
                     .append("wrapper", task.getNodes())
-                    .append("template", Documents.newDocument()
-                            .append("name", mainTemplate.getName())
-                            .append("backend", "LOCAL")
-                            .append("url", (String) null)
-                            .append("processPreParameters", cloudSystem.getAllJvmOptions(task))
-                            .append("installablePlugins", inclusions.stream()
-                                    .map(inclusion -> Documents.newDocument()
-                                            .append("name", inclusion.getTarget())
-                                            .append("url", inclusion.getUrl())
-                                            .append("pluginResourceType", "URL")
-                                    )
-                                    .collect(Collectors.toList())
-                            )
-                    )
+                    .append("template", CloudNet2Utils.templateToJson(cloudSystem, task, mainTemplate, true))
                     .append("proxyVersion", "BUNGEECORD")
                     .append("startPort", task.getStartPort())
                     .append("startup", task.getMinServices())
@@ -240,7 +226,9 @@ public class CloudNet2Services implements CloudReaderWriter {
                     proxyGroup.getInt("memory"),
                     proxyGroup.getInt("startPort"),
                     proxyGroup.getInt("startup"),
+                    -1,
                     ServiceEnvironment.BUNGEECORD,
+                    TemplateInstallerType.ALL,
                     Documents.newDocument()
             );
 

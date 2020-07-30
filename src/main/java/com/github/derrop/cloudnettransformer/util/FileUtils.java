@@ -48,8 +48,6 @@ public class FileUtils {
             return;
         }
 
-        deleteDirectory(targetDirectory);
-
         Files.createDirectories(targetDirectory);
 
         Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {

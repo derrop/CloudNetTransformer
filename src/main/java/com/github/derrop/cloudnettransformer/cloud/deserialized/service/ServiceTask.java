@@ -13,15 +13,16 @@ public class ServiceTask extends ServiceConfigurationBase {
     private final int maxMemory;
     private final int startPort;
     private final int minServices;
+    private final int maxServices;
     private final ServiceEnvironment environment;
+    private final TemplateInstallerType templateInstallerType;
     private final Document properties;
 
     public ServiceTask(String name,
                        Collection<ServiceTemplate> templates, Collection<ServiceInclusion> inclusions, Collection<ServiceDeployment> deployments,
-                       Collection<String> jvmOptions, boolean maintenance, boolean staticServices,
-                       Collection<String> nodes, Collection<String> groups,
-                       int maxMemory, int startPort, int minServices,
-                       ServiceEnvironment environment, Document properties) {
+                       Collection<String> jvmOptions, boolean maintenance, boolean staticServices, Collection<String> nodes,
+                       Collection<String> groups, int maxMemory, int startPort, int minServices, int maxServices,
+                       ServiceEnvironment environment, TemplateInstallerType templateInstallerType, Document properties) {
         super(name, templates, inclusions, deployments, jvmOptions);
         this.maintenance = maintenance;
         this.staticServices = staticServices;
@@ -30,7 +31,9 @@ public class ServiceTask extends ServiceConfigurationBase {
         this.maxMemory = maxMemory;
         this.startPort = startPort;
         this.minServices = minServices;
+        this.maxServices = maxServices;
         this.environment = environment;
+        this.templateInstallerType = templateInstallerType;
         this.properties = properties;
     }
 
@@ -62,8 +65,16 @@ public class ServiceTask extends ServiceConfigurationBase {
         return this.minServices;
     }
 
+    public int getMaxServices() {
+        return this.maxServices;
+    }
+
     public ServiceEnvironment getEnvironment() {
         return this.environment;
+    }
+
+    public TemplateInstallerType getTemplateInstallerType() {
+        return this.templateInstallerType;
     }
 
     public Document getProperties() {
