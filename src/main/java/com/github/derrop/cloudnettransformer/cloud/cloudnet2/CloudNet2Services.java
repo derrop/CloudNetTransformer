@@ -62,7 +62,7 @@ public class CloudNet2Services implements CloudReaderWriter {
                     StringUtils.encryptToSHA256Base64(password),
                     Collections.emptyList()
             ));
-            cloudSystem.addNote(UserNote.important("Admin password: " + password));
+            cloudSystem.addNote(UserNote.important("Password for the administrative user '" + ADMIN_USER_NAME + "': " + password));
         }
         return Collections.singletonList(Documents.newDocument()
                 .append("id", cloudSystem.getConfig().getComponentName())
