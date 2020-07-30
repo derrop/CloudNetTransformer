@@ -5,12 +5,12 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
+import com.github.derrop.cloudnettransformer.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.UUID;
 
 @DescribedCloudExecutor(name = "WrapperKey", types = ExecutorType.WRITE)
 public class CloudNet2WrapperKey implements CloudExecutor {
@@ -26,11 +26,7 @@ public class CloudNet2WrapperKey implements CloudExecutor {
         Files.createDirectories(master);
         Files.createDirectories(wrapper);
 
-        StringBuilder key = new StringBuilder();
-        for (int i = 0; i < 100; i++) {
-            key.append(UUID.randomUUID().toString().replace("-", ""));
-        }
-        byte[] keyBytes = key.toString().getBytes();
+        byte[] keyBytes = StringUtils.randomString(4096).getBytes();
 
         Files.write(master.resolve(WRAPPER_KEY_FILE), keyBytes, StandardOpenOption.CREATE);
         Files.write(wrapper.resolve(WRAPPER_KEY_FILE), keyBytes, StandardOpenOption.CREATE);
