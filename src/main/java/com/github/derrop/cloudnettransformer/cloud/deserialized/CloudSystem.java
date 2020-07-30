@@ -13,9 +13,9 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.Ta
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.*;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.StaticServiceDirectory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.PlacedSign;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.SignConfiguration;
 
-import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,6 +32,7 @@ public class CloudSystem {
     private final Collection<ServiceTask> tasks = new ArrayList<>();
     private final Collection<ServiceGroup> groups = new ArrayList<>();
     private final Collection<TemplateDirectory> templates = new ArrayList<>();
+    private final Collection<PlacedSign> signs = new ArrayList<>();
     private transient DatabaseProvider databaseProvider;
 
     private final Collection<FallbackConfiguration> fallbackConfigurations = new ArrayList<>();
@@ -118,6 +119,10 @@ public class CloudSystem {
 
     public void setDatabaseProvider(DatabaseProvider databaseProvider) {
         this.databaseProvider = databaseProvider;
+    }
+
+    public Collection<PlacedSign> getSigns() {
+        return this.signs;
     }
 
     public Collection<TemplateDirectory> getTemplates() {

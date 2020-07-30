@@ -1,4 +1,4 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet2.signs;
 
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@DescribedCloudExecutor(name = "Signs")
-public class CloudNet2Signs implements CloudReaderWriter {
+@DescribedCloudExecutor(name = "SignLayout")
+public class CloudNet2SignLayout implements CloudReaderWriter {
 
     private Path config(Path directory) {
         return directory.resolve(Constants.MASTER_DIRECTORY).resolve("local").resolve("signLayout.json");

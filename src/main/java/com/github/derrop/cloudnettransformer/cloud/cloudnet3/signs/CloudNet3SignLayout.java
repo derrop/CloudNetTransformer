@@ -1,4 +1,4 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet3;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet3.signs;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
@@ -20,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@DescribedCloudExecutor(name = "Signs")
-public class CloudNet3Signs extends FileDownloader implements CloudReaderWriter {
+@DescribedCloudExecutor(name = "SignLayout")
+public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWriter {
 
-    public CloudNet3Signs() {
+    public CloudNet3SignLayout() {
         super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-signs/build/libs/cloudnet-signs.jar", "modules/cloudnet-signs.jar");
     }
 
