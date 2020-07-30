@@ -2,6 +2,9 @@ package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
 
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUser;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.Fallback;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.FallbackConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.login.LoginConfiguration;
@@ -15,6 +18,8 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceT
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.TemplateInstallerType;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
+import com.github.derrop.cloudnettransformer.util.StringUtils;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.reflect.TypeToken;
@@ -24,8 +29,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@DescribedCloudExecutor(name = "Services")
+@DescribedCloudExecutor(name = "Services", priority = ExecutorPriority.LAST)
 public class CloudNet2Services implements CloudReaderWriter {
+
+    private static final UUID ADMIN_USER_ID = UUID.randomUUID();
+    private static final String ADMIN_USER_NAME = "admin-" + StringUtils.randomString(8);
 
     private Path config(Path directory) {
         return directory.resolve(Constants.MASTER_DIRECTORY).resolve("services.json");
@@ -44,11 +52,22 @@ public class CloudNet2Services implements CloudReaderWriter {
     }
 
     private Collection<Document> writeWrapper(CloudSystem cloudSystem) {
-        // TODO create the admin user?
+        if (!cloudSystem.getPermissionUserProvider().containsUser(ADMIN_USER_ID)) {
+            String password = StringUtils.randomString(32);
+            cloudSystem.getPermissionUserProvider().insertUser(new PermissionUser(
+                    ADMIN_USER_NAME,
+                    Collections.singletonList(new Permission("*", 1, -1, null)),
+                    ADMIN_USER_ID,
+                    null, null,
+                    StringUtils.encryptToSHA256Base64(password),
+                    Collections.emptyList()
+            ));
+            cloudSystem.addNote(UserNote.important("Admin password: " + password));
+        }
         return Collections.singletonList(Documents.newDocument()
                 .append("id", cloudSystem.getConfig().getComponentName())
                 .append("hostName", cloudSystem.getConfig().getIp())
-                .append("user", "admin")
+                .append("user", ADMIN_USER_NAME)
         );
     }
 
