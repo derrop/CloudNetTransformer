@@ -23,4 +23,9 @@ public class ServiceTemplate {
     public String getName() {
         return this.name;
     }
+
+    public boolean isGlobal() {
+        return this.prefix.equalsIgnoreCase("global");
+    }
+
 }

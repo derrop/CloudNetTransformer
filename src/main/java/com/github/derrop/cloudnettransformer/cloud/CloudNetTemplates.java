@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 
 @DescribedCloudExecutor(name = "Templates", priority = ExecutorPriority.FIRST)
 public abstract class CloudNetTemplates implements CloudReaderWriter {
@@ -18,15 +19,16 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
 
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
-        Path templates = this.templatesDirectory(directory);
+        this.writeTemplates(this.templatesDirectory(directory), cloudSystem.getTemplates());
+        return true;
+    }
 
-        for (TemplateDirectory template : cloudSystem.getTemplates()) {
-            Path templateDirectory = templates.resolve(template.getPrefix()).resolve(template.getName());
+    protected void writeTemplates(Path directory, Collection<TemplateDirectory> templates) throws IOException {
+        for (TemplateDirectory template : templates) {
+            Path templateDirectory = directory.resolve(template.getPrefix()).resolve(template.getName());
 
             template.copyTo(templateDirectory);
         }
-
-        return true;
     }
 
     @Override

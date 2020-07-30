@@ -31,6 +31,9 @@ public abstract class ServiceDirectory {
     }
 
     public void copyTo(Path targetDirectory) throws IOException {
+        if (this.directory == null) {
+            return;
+        }
         FileUtils.copyDirectory(this.directory, targetDirectory, this.excludedFiles.toArray(new String[0]));
     }
 

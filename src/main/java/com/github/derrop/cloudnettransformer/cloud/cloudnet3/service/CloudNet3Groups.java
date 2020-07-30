@@ -6,6 +6,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceD
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceEnvironment;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTemplate;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
@@ -16,8 +17,10 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -31,21 +34,41 @@ public class CloudNet3Groups implements CloudReaderWriter {
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
 
-        Collection<Document> groups = new ArrayList<>();
+        Collection<ServiceGroup> groups = new ArrayList<>(cloudSystem.getGroups());
 
-        for (ServiceGroup group : cloudSystem.getGroups()) {
-            Document document = Documents.newDocument();
+        for (ServiceEnvironment environment : ServiceEnvironment.values()) {
+            for (TemplateDirectory globalTemplate : cloudSystem.getGlobalTemplates(environment)) {
+                String name = environment == ServiceEnvironment.BUNGEECORD ? "Proxy" : environment == ServiceEnvironment.MINECRAFT_SERVER ? "Server" : environment.toString();
+                ServiceTemplate template = new ServiceTemplate("local", "Global", name.toLowerCase());
 
-            document.append("name", group.getName())
+                groups.add(new ServiceGroup("Global-" + name, Collections.singletonList(template), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.singletonList(environment)));
+
+                Path targetDirectory = directory.resolve("local").resolve("templates").resolve(template.getPrefix()).resolve(template.getName());
+                globalTemplate.copyTo(targetDirectory);
+
+                Path applicationFile = cloudSystem.getApplicationFiles().get(environment);
+                if (applicationFile != null) {
+                    Files.copy(applicationFile, targetDirectory.resolve(applicationFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        }
+
+        Collection<Document> documents = new ArrayList<>();
+
+        for (ServiceGroup group : groups) {
+            Document document = Documents.newDocument()
+                    .append("name", group.getName())
                     .append("jvmOptions", group.getJvmOptions())
                     .append("targetEnvironments", group.getEnvironments())
                     .append("includes", group.getInclusions().stream().map(CloudNet3Utils::inclusionToDocument).collect(Collectors.toList()))
                     .append("templates", group.getTemplates())
                     .append("deployments", group.getDeployments())
                     .append("properties", Documents.newDocument());
+
+            documents.add(document);
         }
 
-        Documents.jsonStorage().write(Documents.newDocument("groups", groups), this.groupsPath(directory));
+        Documents.jsonStorage().write(Documents.newDocument("groups", documents), this.groupsPath(directory));
 
         return true;
     }
@@ -74,6 +97,24 @@ public class CloudNet3Groups implements CloudReaderWriter {
             );
             serviceGroup.getEnvironments().removeIf(Objects::isNull);
             cloudSystem.getGroups().add(serviceGroup);
+
+            for (ServiceEnvironment environment : serviceGroup.getEnvironments()) {
+                for (ServiceTemplate template : serviceGroup.getTemplates()) {
+                    TemplateDirectory templateDirectory = new TemplateDirectory(
+                            template.getPrefix(), template.getName(),
+                            directory.resolve("local").resolve("templates").resolve(template.getPrefix()).resolve(template.getName())
+                    );
+                    cloudSystem.addGlobalTemplate(environment, templateDirectory);
+
+                    if (cloudSystem.getApplicationFiles().containsKey(environment)) {
+                        continue;
+                    }
+                    Path applicationFile = CloudNet3Utils.resolveApplicationPath(environment, templateDirectory.getDirectory());
+                    if (applicationFile != null) {
+                        cloudSystem.getApplicationFiles().put(environment, applicationFile);
+                    }
+                }
+            }
         }
 
         return true;

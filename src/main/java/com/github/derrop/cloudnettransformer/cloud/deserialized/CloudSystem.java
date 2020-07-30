@@ -16,6 +16,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.director
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.PlacedSign;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.SignConfiguration;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,6 +30,9 @@ public class CloudSystem {
     private final Collection<StaticServiceDirectory> staticServices = new ArrayList<>();
     private CloudConfig config;
 
+    private final Map<ServiceEnvironment, Collection<TemplateDirectory>> globalTemplates = new HashMap<>();
+
+    private final Map<ServiceEnvironment, Path> applicationFiles = new HashMap<>();
 
     private final Collection<ServiceTask> tasks = new ArrayList<>();
     private final Collection<ServiceGroup> groups = new ArrayList<>();
@@ -187,7 +191,6 @@ public class CloudSystem {
         Collection<T> result = new ArrayList<>(function.apply(task));
         for (ServiceGroup group : this.groups) {
             if (task.getGroups().contains(group.getName()) || group.getEnvironments().contains(task.getEnvironment())) {
-
                 result.addAll(function.apply(group));
             }
         }
@@ -201,6 +204,22 @@ public class CloudSystem {
         for (StaticServiceDirectory staticService : this.staticServices) {
             staticService.getExcludedFiles().addAll(Arrays.asList(excludedFiles));
         }
+    }
+
+    public Map<ServiceEnvironment, Collection<TemplateDirectory>> getGlobalTemplates() {
+        return this.globalTemplates;
+    }
+
+    public void addGlobalTemplate(ServiceEnvironment environment, TemplateDirectory template) {
+        this.globalTemplates.computeIfAbsent(environment, e -> new ArrayList<>()).add(template);
+    }
+
+    public Collection<TemplateDirectory> getGlobalTemplates(ServiceEnvironment environment) {
+        return this.globalTemplates.getOrDefault(environment, Collections.emptyList());
+    }
+
+    public Map<ServiceEnvironment, Path> getApplicationFiles() {
+        return this.applicationFiles;
     }
 
 }
