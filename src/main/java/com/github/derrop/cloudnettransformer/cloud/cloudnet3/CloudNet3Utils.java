@@ -7,9 +7,11 @@ import com.github.derrop.documents.Documents;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 public class CloudNet3Utils {
@@ -18,6 +20,7 @@ public class CloudNet3Utils {
             ServiceEnvironment.MINECRAFT_SERVER, new String[]{"spigot", "paper", "glowstone"},
             ServiceEnvironment.BUNGEECORD, new String[]{"bungee", "waterfall", "travertine", "hexacord"}
     );
+    private static final String[] SPIGOT_EXTRA_FILES = new String[]{"server.properties", "spigot.yml"};
 
     public static Document inclusionToDocument(ServiceInclusion inclusion) {
         Document document = Documents.newDocument().append("destination", inclusion.getTarget()).append("url", inclusion.getUrl());
@@ -67,6 +70,16 @@ public class CloudNet3Utils {
         }
 
         return null;
+    }
+
+    public static void copyExtraSpigotFiles(Path targetDirectory) throws IOException {
+        for (String file : SPIGOT_EXTRA_FILES) {
+            try (InputStream inputStream = CloudNet3Utils.class.getClassLoader().getResourceAsStream(file)) {
+                if (inputStream != null) {
+                    Files.copy(inputStream, targetDirectory.resolve(file), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        }
     }
 
 }
