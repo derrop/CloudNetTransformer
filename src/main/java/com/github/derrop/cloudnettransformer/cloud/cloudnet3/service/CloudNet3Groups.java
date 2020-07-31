@@ -51,7 +51,9 @@ public class CloudNet3Groups implements CloudReaderWriter {
                 Path targetDirectory = directory.resolve("local").resolve("templates").resolve(template.getPrefix()).resolve(template.getName());
                 Files.createDirectories(targetDirectory);
 
-                CloudNet3Utils.copyExtraSpigotFiles(targetDirectory);
+                if (environment == ServiceEnvironment.MINECRAFT_SERVER) {
+                    CloudNet3Utils.copyExtraSpigotFiles(targetDirectory);
+                }
                 globalTemplate.copyTo(targetDirectory);
 
                 Path applicationFile = cloudSystem.getApplicationFiles().get(environment);
