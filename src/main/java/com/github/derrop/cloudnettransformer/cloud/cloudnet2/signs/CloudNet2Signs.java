@@ -23,7 +23,6 @@ public class CloudNet2Signs implements CloudReaderWriter {
 
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
 
-        Document document = Documents.newDocument().append("_database_id_unique", DOCUMENT_NAME);
         Document signs = Documents.newDocument();
 
         for (PlacedSign sign : cloudSystem.getSigns()) {
@@ -42,8 +41,7 @@ public class CloudNet2Signs implements CloudReaderWriter {
             );
         }
 
-        document.append("signs", signs);
-        database.insert(DOCUMENT_NAME, document);
+        database.insert(DOCUMENT_NAME, Documents.newDocument().append("signs", signs));
 
         return true;
     }

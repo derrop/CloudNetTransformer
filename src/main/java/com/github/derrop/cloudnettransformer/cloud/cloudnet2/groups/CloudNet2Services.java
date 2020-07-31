@@ -1,6 +1,7 @@
-package com.github.derrop.cloudnettransformer.cloud.cloudnet2;
+package com.github.derrop.cloudnettransformer.cloud.cloudnet2.groups;
 
 import com.github.derrop.cloudnettransformer.Constants;
+import com.github.derrop.cloudnettransformer.cloud.cloudnet2.CloudNet2Utils;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;

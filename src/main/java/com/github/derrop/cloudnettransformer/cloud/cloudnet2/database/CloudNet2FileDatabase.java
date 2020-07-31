@@ -28,6 +28,10 @@ public class CloudNet2FileDatabase implements Database {
         return this.name;
     }
 
+    private Document prepareDocument(String key, Document document) {
+        return document.append("_database_id_unique", key);
+    }
+
     @Override
     public boolean insert(String key, Document document) {
         Path path = this.directory.resolve(key);
@@ -35,7 +39,7 @@ public class CloudNet2FileDatabase implements Database {
             return false;
         }
 
-        Documents.jsonStorage().write(document, path);
+        Documents.jsonStorage().write(this.prepareDocument(key, document), path);
         return true;
     }
 
@@ -46,7 +50,7 @@ public class CloudNet2FileDatabase implements Database {
             return false;
         }
 
-        Documents.jsonStorage().write(document, path);
+        Documents.jsonStorage().write(this.prepareDocument(key, document), path);
         return true;
     }
 
@@ -72,9 +76,7 @@ public class CloudNet2FileDatabase implements Database {
 
     @Override
     public List<Document> get(String fieldName, Object fieldValue) {
-        return new ArrayList<>(this.filter((key, document) -> {
-            return Objects.equals(document.getString(fieldName), fieldValue);
-        }).values());
+        return new ArrayList<>(this.filter((key, document) -> Objects.equals(document.getString(fieldName), fieldValue)).values());
     }
 
     @Override

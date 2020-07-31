@@ -112,11 +112,13 @@ public class CloudNet2PermissionUserProvider implements PermissionUserProvider {
                 .append("permissions", permissions)
                 .append("prefix", user.getPrefix())
                 .append("suffix", user.getSuffix())
-                .append("groups", user.getGroups().stream().map(group -> Documents.newDocument().append("group", group.getName()).append("timeout", group.getTimeout())));
+                .append("groups", user.getGroups().stream().map(group -> Documents.newDocument().append("group", group.getName()).append("timeout", group.getTimeout())).collect(Collectors.toList()));
 
         if (this.database.contains(uuidString)) {
             Document fullDocument = this.database.get(uuidString);
-            fullDocument.append("permissionEntity", permissionEntity);
+            Document offlinePlayer = fullDocument.getDocument("offlinePlayer");
+            offlinePlayer.append("permissionEntity", permissionEntity);
+            fullDocument.append("offlinePlayer", offlinePlayer);
             this.database.update(uuidString, fullDocument);
         } else {
             Document lastPlayerConnection = Documents.newDocument()
@@ -136,11 +138,7 @@ public class CloudNet2PermissionUserProvider implements PermissionUserProvider {
                     .append("lastPlayerConnection", lastPlayerConnection)
                     .append("permissionEntity", permissionEntity);
 
-            Document fullDocument = Documents.newDocument()
-                    .append("_database_id_unique", uuidString)
-                    .append("offlinePlayer", offlinePlayer);
-
-            this.database.insert(uuidString, fullDocument);
+            this.database.insert(uuidString, Documents.newDocument().append("offlinePlayer", offlinePlayer));
         }
     }
 

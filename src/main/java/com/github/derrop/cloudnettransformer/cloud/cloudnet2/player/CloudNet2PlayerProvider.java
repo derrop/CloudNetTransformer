@@ -102,10 +102,12 @@ public class CloudNet2PlayerProvider implements PlayerProvider {
                 .append("lastPlayerConnection", lastPlayerConnection)
                 .append("permissionEntity", permissionEntity);
 
+        Document document = Documents.newDocument().append("offlinePlayer", offlinePlayer);
+
         if (contains) {
-            this.database.update(uuidString, offlinePlayer);
+            this.database.update(uuidString, document);
         } else {
-            this.database.insert(uuidString, offlinePlayer);
+            this.database.insert(uuidString, document);
         }
     }
 

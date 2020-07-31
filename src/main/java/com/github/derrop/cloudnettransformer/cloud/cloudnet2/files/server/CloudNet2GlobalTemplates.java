@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 
 @DescribedCloudExecutor(name = "GlobalTemplate", priority = ExecutorPriority.LAST + 1)
@@ -61,10 +62,10 @@ public class CloudNet2GlobalTemplates extends CloudNetTemplates {
 
             switch (environment) {
                 case MINECRAFT_SERVER:
-                    Files.copy(applicationFile, this.localDirectory(directory).resolve("spigot.jar"));
+                    Files.copy(applicationFile, this.localDirectory(directory).resolve("spigot.jar"), StandardCopyOption.REPLACE_EXISTING);
                     break;
                 case BUNGEECORD:
-                    Files.copy(applicationFile, this.localDirectory(directory).resolve("proxy_versions").resolve("BungeeCord.jar"));
+                    Files.copy(applicationFile, this.localDirectory(directory).resolve("proxy_versions").resolve("BungeeCord.jar"), StandardCopyOption.REPLACE_EXISTING);
                     break;
             }
         }

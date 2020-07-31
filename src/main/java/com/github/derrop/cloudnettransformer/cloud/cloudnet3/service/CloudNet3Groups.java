@@ -1,5 +1,6 @@
 package com.github.derrop.cloudnettransformer.cloud.cloudnet3.service;
 
+import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.cloudnet3.CloudNet3Utils;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceDeployment;
@@ -37,13 +38,18 @@ public class CloudNet3Groups implements CloudReaderWriter {
         Collection<ServiceGroup> groups = new ArrayList<>(cloudSystem.getGroups());
 
         for (ServiceEnvironment environment : ServiceEnvironment.values()) {
-            for (TemplateDirectory globalTemplate : cloudSystem.getGlobalTemplates(environment)) {
-                String name = environment == ServiceEnvironment.BUNGEECORD ? "Proxy" : environment == ServiceEnvironment.MINECRAFT_SERVER ? "Server" : environment.toString();
-                ServiceTemplate template = new ServiceTemplate("local", "Global", name.toLowerCase());
+            String name = environment == ServiceEnvironment.BUNGEECORD ? Constants.GLOBAL_PROXY_GROUP_SUFFIX : environment == ServiceEnvironment.MINECRAFT_SERVER ? Constants.GLOBAL_SERVER_GROUP_SUFFIX : environment.toString();
+            ServiceTemplate template = new ServiceTemplate("local", "Global", name.toLowerCase());
 
+            if (cloudSystem.getGlobalTemplates(environment).isEmpty()) {
+                cloudSystem.addGlobalTemplate(environment, new TemplateDirectory(template.getPrefix(), template.getName(), null));
+            }
+
+            for (TemplateDirectory globalTemplate : cloudSystem.getGlobalTemplates(environment)) {
                 groups.add(new ServiceGroup("Global-" + name, Collections.singletonList(template), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.singletonList(environment)));
 
                 Path targetDirectory = directory.resolve("local").resolve("templates").resolve(template.getPrefix()).resolve(template.getName());
+                Files.createDirectories(targetDirectory);
                 globalTemplate.copyTo(targetDirectory);
 
                 Path applicationFile = cloudSystem.getApplicationFiles().get(environment);
