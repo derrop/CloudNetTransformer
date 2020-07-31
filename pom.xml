@@ -4,8 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>eu.thesystems.cloudnet</groupId>
+    <groupId>com.github.derrop</groupId>
     <artifactId>transformer</artifactId>
+    <packaging>pom</packaging>
     <version>1.0</version>
     <build>
         <plugins>
@@ -48,6 +49,13 @@
         </plugins>
     </build>
 
+    <modules>
+        <module>transformer-core</module>
+        <module>transformer-cloudnet2</module>
+        <module>transformer-cloudnet3</module>
+        <module>transformer-loader</module>
+    </modules>
+
     <repositories>
         <repository>
             <id>jitpack</id>
@@ -75,27 +83,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>29.0-jre</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.197</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.20</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>3.4.5</version>
             <scope>compile</scope>
         </dependency>
 
