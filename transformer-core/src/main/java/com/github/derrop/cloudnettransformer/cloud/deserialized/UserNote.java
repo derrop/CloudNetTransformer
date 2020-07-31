@@ -22,6 +22,10 @@ public class UserNote {
         return of(Level.UNNECESSARY, message);
     }
 
+    public static UserNote upgrade(String message) {
+        return of(Level.UPGRADE, message);
+    }
+
     public static UserNote of(Level level, String message) {
         return new UserNote(level, message);
     }
@@ -42,7 +46,8 @@ public class UserNote {
 
         IMPORTANT("Important"),
         NORMAL("Info"),
-        UNNECESSARY("Unnecessary Info");
+        UNNECESSARY("Unnecessary Info"),
+        UPGRADE("Upgrade Info");
 
         private final String prefix;
 

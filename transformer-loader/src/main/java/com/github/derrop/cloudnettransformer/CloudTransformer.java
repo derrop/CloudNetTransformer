@@ -44,8 +44,13 @@ public class CloudTransformer {
         sourceType.getExecutor().execute(ExecutorType.READ, cloudSystem, sourceDirectory);
         targetType.getExecutor().execute(ExecutorType.WRITE, cloudSystem, targetDirectory);
 
+        String description = targetType.createDescription(sourceType);
+        if (description != null && !description.trim().isEmpty()) {
+            cloudSystem.addNote(UserNote.upgrade(description));
+        }
+
         if (!cloudSystem.getNotes().isEmpty()) {
-            System.out.println("Notes (you can still read them later in the transformerNotes.txt in the output directory)");
+            System.out.println("Notes (you can still read them later in the transformerNotes.txt in the output directory):");
             Collection<String> notes = cloudSystem.getNotes().stream().map(UserNote::format).collect(Collectors.toList());
             notes.forEach(System.out::println);
             Files.write(targetDirectory.resolve("transformerNotes.txt"), notes, StandardOpenOption.CREATE);

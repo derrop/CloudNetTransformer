@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// TODO convert NPCs (CloudNet 3) and Mobs (CloudNet 2)
 public class CloudSystem {
 
     private SignConfiguration signConfiguration;
@@ -148,6 +149,14 @@ public class CloudSystem {
     }
 
     public void addNote(UserNote note) {
+        String[] lines = note.getMessage().split("\n");
+        if (lines.length != 1) {
+            for (String line : lines) {
+                this.notes.add(UserNote.of(note.getLevel(), line));
+            }
+            return;
+        }
+
         this.notes.add(note);
     }
 

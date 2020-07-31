@@ -1,0 +1,95 @@
+# Conversion from CloudNet 2 to CloudNet 3
+
+      ┌─────────────────────────────────────── Compare ───────────────────────────────────────┐
+      │                                                                                       │
+      │      ┌────────────────────────────────────┬────────────────────────────────────┐      │
+      │      │             CloudNet 2             │             CloudNet 3             │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │####################################│####################################│      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │       Server and Proxy groups      │                Tasks               │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │  Everything twice (Proxy / Server) │      Combined Proxy and Server     │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │           Servers/Proxies          │              Services              │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │  Everything twice (Proxy / Server) │      Combined Proxy and Server     │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │           /cloud Command           │           /cloud Command           │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │      Completely different than     │         Same as the console        │      │
+      │      │             the console            │                                    │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │                Signs               │                Signs               │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │      Managed with /cloudserver     │       Managed with /cloudsign      │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │                Mobs                │                NPCs                │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │      Managed with /cloudserver     │       Managed with /cloudnpc       │      │
+      │      │          Constant position         │       Can look at the player       │      │
+      │      │                                    │      Can sneak like the player     │      │
+      │      │    Random connect and inventory    │     Inventory, Random connect,     │      │
+      │      │                                    │    Highest/Lowest player connect   │      │
+      │      └────────────────────────────────────┴────────────────────────────────────┘      │
+      │                                                                                       │
+      └─────────────────────────────────────── Compare ───────────────────────────────────────┘
+
+
+      ┌───────────────────────────────────── Description ─────────────────────────────────────┐
+      │                                                                                       │
+      │      ┌────────────────────────────────────┬────────────────────────────────────┐      │
+      │      │             CloudNet 2             │             CloudNet 3             │      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │####################################│####################################│      │
+      │      ├────────────────────────────────────┼────────────────────────────────────┤      │
+      │      │       Server and Proxy groups      │                Tasks               │      │
+      │      ├────────────────────────────────────┴────────────────────────────────────┤      │
+      │      │ As you should know, groups (Proxy and Server) define the properties of  │      │
+      │      │ any server/proxy that is created with the given group. In CloudNet 3,   │      │
+      │      │ those are named the "Tasks", they define the properties of their        │      │
+      │      │ proxies and servers (now called "Services"). You can create new tasks   │      │
+      │      │ by using the `tasks setup` command.                                     │      │
+      │      ├────────────────────────────────────┬────────────────────────────────────┤      │
+      │      │           Servers/Proxies          │              Services              │      │
+      │      ├────────────────────────────────────┴────────────────────────────────────┤      │
+      │      │ Servers and Proxies like "Lobby─1" and "Bungee─1" are the components of │      │
+      │      │ CloudNet 2 that manage the online players, those are named Services     │      │
+      │      │ instead of Servers and Proxies. New services can either be created and  │      │
+      │      │ started by using the `create by TASK AMOUNT ──start` command or         │      │
+      │      │ `ser SERVICE start` directly, where `SERVICE` could be `Lobby─1` and    │      │
+      │      │ `TASK` could be `Lobby`.                                                │      │
+      │      ├────────────────────────────────────┬────────────────────────────────────┤      │
+      │      │           /cloud Command           │           /cloud Command           │      │
+      │      ├────────────────────────────────────┴────────────────────────────────────┤      │
+      │      │ In CloudNet 2 the `/cloud` Command (ingame) had its own implementation, │      │
+      │      │ there were no commands that are exactly the same as in the console. In  │      │
+      │      │ CloudNet 3 however `/cloud` just executes the given command in the      │      │
+      │      │ console, that way commands in the console and ingame are exactly the    │      │
+      │      │ same.                                                                   │      │
+      │      ├────────────────────────────────────┬────────────────────────────────────┤      │
+      │      │                Signs               │                Signs               │      │
+      │      ├────────────────────────────────────┴────────────────────────────────────┤      │
+      │      │ In CloudNet 2 signs were created with the `/cloudserver` command and    │      │
+      │      │ only available on servers with the groupMode `LOBBY` or `STATIC_LOBBY`. │      │
+      │      │ Now you can create them with `/cloudsign` ingame on servers that have a │      │
+      │      │ sign configuration, this transformer has already created one for each   │      │
+      │      │ group with the groupMode `LOBBY` or `STATIC_LOBBY`. If you want to      │      │
+      │      │ create new ones later, just use the `signs` command in the console to   │      │
+      │      │ create entries for specific groups.                                     │      │
+      │      ├────────────────────────────────────┬────────────────────────────────────┤      │
+      │      │                Mobs                │                NPCs                │      │
+      │      ├────────────────────────────────────┴────────────────────────────────────┤      │
+      │      │ In CloudNet 2 mobs were created like the signs with the `/cloudserver`  │      │
+      │      │ command and only available on servers with the groupMode `LOBBY` or     │      │
+      │      │ `STATIC_LOBBY`. They don't exist in that exact form anymore, now you    │      │
+      │      │ can create NPCs (players) as the server selectors, but the function is  │      │
+      │      │ almost the same, they just have more features :D. Just like the signs   │      │
+      │      │ they are also only available on servers that have an npc configuration, │      │
+      │      │ this transformer has already created one for each group with the        │      │
+      │      │ groupMode `LOBBY` or `STATIC_LOBBY`. If you want to create new ones     │      │
+      │      │ later, just use the `npc` command in the console to create entries      │      │
+      │      │ for specific groups.                                                    │      │
+      │      └─────────────────────────────────────────────────────────────────────────┘      │
+      │                                                                                       │
+      └───────────────────────────────────── Description ─────────────────────────────────────┘
