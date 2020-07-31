@@ -53,11 +53,11 @@
       ├──────┼────────────────────────────────────┬────────────────────────────────────┼──────┤
       │      │           Servers/Proxies          │              Services              │      │
       │      ├────────────────────────────────────┴────────────────────────────────────┤      │
-      │      │ Servers and Proxies like "Lobby─1" and "Bungee─1" are the components of │      │
+      │      │ Servers and Proxies like "Lobby-1" and "Bungee-1" are the components of │      │
       │      │ CloudNet 2 that manage the online players, those are named Services     │      │
       │      │ instead of Servers and Proxies. New services can either be created and  │      │
-      │      │ started by using the `create by TASK AMOUNT ──start` command or         │      │
-      │      │ `ser SERVICE start` directly, where `SERVICE` could be `Lobby─1` and    │      │
+      │      │ started by using the `create by TASK AMOUNT --start` command or         │      │
+      │      │ `ser SERVICE start` directly, where `SERVICE` could be `Lobby-1` and    │      │
       │      │ `TASK` could be `Lobby`.                                                │      │
       ├──────┼────────────────────────────────────┬────────────────────────────────────┼──────┤
       │      │           /cloud Command           │           /cloud Command           │      │
