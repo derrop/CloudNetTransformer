@@ -59,6 +59,9 @@ public class MultiCloudExecutor implements CloudExecutor {
             System.out.println("Executing '" + reader.getName() + "' as " + type + "...");
             if (!reader.getExecutor().execute(type, cloudSystem, directory)) {
                 System.err.println("Failed to execute '" + reader.getName() + "'");
+                if (reader.getDescription().optional()) {
+                    continue;
+                }
                 return false;
             }
             System.out.println("Successfully executed '" + reader.getName() + "'");

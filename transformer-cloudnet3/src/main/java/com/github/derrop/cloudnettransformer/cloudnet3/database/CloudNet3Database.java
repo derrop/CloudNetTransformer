@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-@DescribedCloudExecutor(name = "Database", priority = ExecutorPriority.FIRST)
+@DescribedCloudExecutor(name = "Database", priority = ExecutorPriority.FIRST, optional = false)
 public class CloudNet3Database implements CloudExecutor {
 
     private static final Map<String, Class<? extends DatabaseProvider>> AVAILABLE_PROVIDERS = new HashMap<>();

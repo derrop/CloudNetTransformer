@@ -15,4 +15,6 @@ public @interface DescribedCloudExecutor {
 
     int priority() default ExecutorPriority.NORMAL;
 
+    boolean optional() default true;
+
 }

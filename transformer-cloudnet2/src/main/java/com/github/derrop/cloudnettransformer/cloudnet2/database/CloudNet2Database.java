@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@DescribedCloudExecutor(name = "Database", priority = ExecutorPriority.FIRST)
+@DescribedCloudExecutor(name = "Database", priority = ExecutorPriority.FIRST, optional = false)
 public class CloudNet2Database implements CloudExecutor {
 
     @Override
