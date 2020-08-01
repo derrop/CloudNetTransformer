@@ -62,7 +62,7 @@ public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter
                 .append("logPlayerConnections", true)
                 .append("properties", Documents.newDocument());
 
-        Documents.jsonStorage().write(Documents.newDocument("config", config), this.config(directory));
+        Documents.newDocument("config", config).json().write(this.config(directory));;
 
         return true;
     }

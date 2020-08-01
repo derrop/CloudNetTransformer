@@ -74,7 +74,7 @@ public class CloudNet3Tasks implements CloudReaderWriter {
                             .append("maxServiceCount", task.getMaxServices())
                     ));
 
-            Documents.jsonStorage().write(document, tasksDirectory.resolve(task.getName() + ".json"));
+            document.json().write(tasksDirectory.resolve(task.getName() + ".json"));;
 
         }
 

@@ -78,7 +78,7 @@ public class CloudNet3Groups implements CloudReaderWriter {
             documents.add(document);
         }
 
-        Documents.jsonStorage().write(Documents.newDocument("groups", documents), this.groupsPath(directory));
+        Documents.newDocument("groups", documents).json().write(this.groupsPath(directory));
 
         return true;
     }

@@ -41,7 +41,7 @@ public class CloudNet2FileDatabase implements Database {
             return false;
         }
 
-        Documents.jsonStorage().write(this.prepareDocument(key, document), path);
+        this.prepareDocument(key, document).json().write(path);;
         return true;
     }
 
@@ -52,7 +52,7 @@ public class CloudNet2FileDatabase implements Database {
             return false;
         }
 
-        Documents.jsonStorage().write(this.prepareDocument(key, document), path);
+        this.prepareDocument(key, document).json().write(path);;
         return true;
     }
 

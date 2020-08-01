@@ -67,7 +67,7 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
                 .append("tabListConfigurations", cloudSystem.getTabListConfigurations())
                 .append("ingameServiceStartStopMessages", cloudSystem.getConfig().shouldNotifyServerUpdates());
 
-        Documents.jsonStorage().write(Documents.newDocument().append("config", document), this.config(directory));
+        Documents.newDocument().append("config", document).json().write(this.config(directory));;
 
         return true;
     }

@@ -64,7 +64,7 @@ public class CloudNet3Config implements CloudReaderWriter {
 
         document.append("defaultJVMOptionParameters", true);
 
-        Documents.jsonStorage().write(document, this.config(directory));
+        document.json().write(this.config(directory));;
 
         return true;
     }

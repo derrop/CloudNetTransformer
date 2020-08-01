@@ -48,7 +48,7 @@ public class CloudNet2PermissionGroups implements CloudReaderWriter {
                 .append("enabled", permissionConfiguration.isEnabled())
                 .append("groups", groups);
 
-        Documents.yamlStorage().write(document, this.config(directory));
+        document.yaml().write(this.config(directory));;
 
         return true;
     }

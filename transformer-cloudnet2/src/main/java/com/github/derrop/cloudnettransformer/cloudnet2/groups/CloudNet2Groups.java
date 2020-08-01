@@ -75,7 +75,7 @@ public class CloudNet2Groups implements CloudReaderWriter {
 
             // TODO implement priorityService (or smartConfig in CloudNet 3)?
 
-            Documents.jsonStorage().write(Documents.newDocument("group", group), groupsDirectory.resolve(task.getName() + ".json"));
+            Documents.newDocument("group", group).json().write(groupsDirectory.resolve(task.getName() + ".json"));;
         }
 
         return true;

@@ -66,7 +66,7 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
                         .append("searchingLayouts", searchLayoutJson)
         );
 
-        Documents.jsonStorage().write(Documents.newDocument("layout_config", config), this.config(directory));
+        Documents.newDocument("layout_config", config).json().write(this.config(directory));;
 
         return true;
     }

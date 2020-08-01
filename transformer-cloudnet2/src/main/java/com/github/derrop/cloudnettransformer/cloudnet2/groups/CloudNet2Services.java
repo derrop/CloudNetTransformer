@@ -47,7 +47,7 @@ public class CloudNet2Services implements CloudReaderWriter {
                 .append("wrapper", this.writeWrapper(cloudSystem))
                 .append("proxyGroups", this.writeProxyGroups(cloudSystem));
 
-        Documents.jsonStorage().write(document, this.config(directory));
+        document.json().write(this.config(directory));;
 
         return true;
     }

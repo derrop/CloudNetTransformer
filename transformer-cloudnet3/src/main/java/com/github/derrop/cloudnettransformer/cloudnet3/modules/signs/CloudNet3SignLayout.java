@@ -69,7 +69,7 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         messages.put("command-cloudsign-sign-already-exist", signConfiguration.getMessages().get(MessageType.SIGN_ALREADY_EXISTS));
         document.append("messages", messages);
 
-        Documents.jsonStorage().write(document, this.config(directory));
+        document.json().write(this.config(directory));;
 
         return true;
     }

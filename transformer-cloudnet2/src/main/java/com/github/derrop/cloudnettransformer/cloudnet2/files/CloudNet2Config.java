@@ -75,8 +75,8 @@ public class CloudNet2Config implements CloudReaderWriter {
                 .append("percentOfCPUForANewProxy", config.getMaxCPUUsageToStartServices())
         );
 
-        Documents.yamlStorage().write(master, this.masterConfig(directory));
-        Documents.yamlStorage().write(wrapper, this.wrapperConfig(directory));
+        master.yaml().write(this.masterConfig(directory));;
+        wrapper.yaml().write(this.wrapperConfig(directory));;
 
         return true;
     }

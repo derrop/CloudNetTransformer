@@ -102,7 +102,7 @@ public class CloudNet2PermissionUserProvider implements PermissionUserProvider {
             users.add(userDocument);
             document.append("users", users);
 
-            Documents.jsonStorage().write(document, this.usersFile);
+            document.json().write(this.usersFile);;
             return;
         }
 
