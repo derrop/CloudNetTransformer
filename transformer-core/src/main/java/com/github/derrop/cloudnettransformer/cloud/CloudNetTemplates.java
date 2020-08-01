@@ -44,21 +44,32 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
 
         try (DirectoryStream<Path> prefixStream = Files.newDirectoryStream(templates)) {
             for (Path prefixDirectory : prefixStream) {
-                try (DirectoryStream<Path> nameStream = Files.newDirectoryStream(prefixDirectory)) {
-                    for (Path nameDirectory : nameStream) {
-                        if (!Files.isDirectory(prefixDirectory) || !Files.isDirectory(nameDirectory)) {
-                            continue;
-                        }
-                        String group = prefixDirectory.getFileName().toString();
-                        String name = nameDirectory.getFileName().toString();
-
-                        cloudSystem.getTemplates().add(this.createTemplateDirectory(group, name, nameDirectory));
-                    }
+                if (!Files.isDirectory(prefixDirectory)) {
+                    continue;
                 }
+                this.resolvePrefixDirectory(cloudSystem, prefixDirectory);
             }
         }
 
         return true;
+    }
+
+    protected void resolvePrefixDirectory(CloudSystem cloudSystem, Path prefixDirectory) throws IOException {
+        try (DirectoryStream<Path> nameStream = Files.newDirectoryStream(prefixDirectory)) {
+            for (Path nameDirectory : nameStream) {
+                if (!Files.isDirectory(nameDirectory)) {
+                    continue;
+                }
+                this.resolveNameDirectory(cloudSystem, prefixDirectory, nameDirectory);
+            }
+        }
+    }
+
+    protected void resolveNameDirectory(CloudSystem cloudSystem, Path prefixDirectory, Path nameDirectory) throws IOException {
+        String group = prefixDirectory.getFileName().toString();
+        String name = nameDirectory.getFileName().toString();
+
+        cloudSystem.getTemplates().add(this.createTemplateDirectory(group, name, nameDirectory));
     }
 
 }

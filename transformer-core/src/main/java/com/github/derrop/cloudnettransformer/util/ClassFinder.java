@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -34,6 +35,9 @@ public class ClassFinder<T> {
         try {
             for (ClassPath.ClassInfo classInfo : ClassPath.from(super.getClass().getClassLoader()).getTopLevelClassesRecursive(this.prefix)) {
                 Class<?> discovered = classInfo.load();
+                if (Modifier.isAbstract(discovered.getModifiers())) {
+                    continue;
+                }
                 if (this.superClass == null || this.superClass.isAssignableFrom(discovered)) {
                     T t = (T) discovered.getDeclaredConstructor().newInstance();
                     out.add(t);
