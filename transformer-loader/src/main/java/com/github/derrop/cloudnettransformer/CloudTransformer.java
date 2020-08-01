@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -56,7 +57,10 @@ public class CloudTransformer {
 
         String description = targetType.createDescription(sourceType);
         if (description != null && !description.trim().isEmpty()) {
+            Collection<UserNote> notes = new ArrayList<>(cloudSystem.getNotes());
+            cloudSystem.getNotes().clear();
             cloudSystem.addNote(UserNote.upgrade(description));
+            cloudSystem.getNotes().addAll(notes);
         }
 
         if (!cloudSystem.getNotes().isEmpty()) {
@@ -135,8 +139,7 @@ public class CloudTransformer {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         CloudTransformer transformer = new CloudTransformer(reader);
 
-        transformer.transform(Paths.get("D:\\Dev\\Tests\\CloudNet2"), CloudType.CLOUDNET_2, CloudType.CLOUDNET_3);
-        //transformer.askConsole();
+        transformer.askConsole();
     }
 
 }
