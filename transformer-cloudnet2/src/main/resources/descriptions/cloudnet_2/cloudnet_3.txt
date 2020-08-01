@@ -90,6 +90,6 @@
       │      │ groupMode `LOBBY` or `STATIC_LOBBY`. If you want to create new ones     │      │
       │      │ later, just use the `npc` command in the console to create entries      │      │
       │      │ for specific groups.                                                    │      │
-      ├──────┴────────────────────────────────────┴────────────────────────────────────┴──────┤
+      ├──────┴─────────────────────────────────────────────────────────────────────────┴──────┤
       │                                                                                       │
       └───────────────────────────────────── Description ─────────────────────────────────────┘

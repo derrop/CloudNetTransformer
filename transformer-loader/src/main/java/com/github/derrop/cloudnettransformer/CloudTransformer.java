@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer;
 import com.github.derrop.cloudnettransformer.cloud.CloudType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 
 import java.io.BufferedReader;
@@ -42,7 +43,16 @@ public class CloudTransformer {
 
         CloudSystem cloudSystem = new CloudSystem();
         sourceType.getExecutor().execute(ExecutorType.READ, cloudSystem, sourceDirectory);
+        DatabaseProvider sourceDatabaseProvider = cloudSystem.getDatabaseProvider();
         targetType.getExecutor().execute(ExecutorType.WRITE, cloudSystem, targetDirectory);
+        DatabaseProvider targetDatabaseProvider = cloudSystem.getDatabaseProvider();
+
+        if (sourceDatabaseProvider != null) {
+            sourceDatabaseProvider.close();
+        }
+        if (targetDatabaseProvider != null) {
+            targetDatabaseProvider.close();
+        }
 
         String description = targetType.createDescription(sourceType);
         if (description != null && !description.trim().isEmpty()) {

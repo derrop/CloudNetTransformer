@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class CloudNet2FileDatabase implements Database {
 
+    private static final String UNIQUE_NAME_KEY = "_database_id_unique";
+
     private final Path directory;
     private final String name;
 
@@ -29,7 +31,7 @@ public class CloudNet2FileDatabase implements Database {
     }
 
     private Document prepareDocument(String key, Document document) {
-        return document.append("_database_id_unique", key);
+        return document.append(UNIQUE_NAME_KEY, key);
     }
 
     @Override

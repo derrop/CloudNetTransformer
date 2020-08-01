@@ -65,7 +65,9 @@ public class CloudNet2GlobalTemplates extends CloudNetTemplates {
                     Files.copy(applicationFile, this.localDirectory(directory).resolve("spigot.jar"), StandardCopyOption.REPLACE_EXISTING);
                     break;
                 case BUNGEECORD:
-                    Files.copy(applicationFile, this.localDirectory(directory).resolve("proxy_versions").resolve("BungeeCord.jar"), StandardCopyOption.REPLACE_EXISTING);
+                    Path proxyVersions = this.localDirectory(directory).resolve("proxy_versions");
+                    Files.createDirectories(proxyVersions);
+                    Files.copy(applicationFile, proxyVersions.resolve("BungeeCord.jar"), StandardCopyOption.REPLACE_EXISTING);
                     break;
             }
         }
