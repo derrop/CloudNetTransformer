@@ -119,7 +119,7 @@ public class CloudTransformer {
             try {
                 directory = Paths.get(this.readLine());
 
-                if (Files.notExists(directory)) {
+                if (Files.notExists(directory) || !Files.isDirectory(directory)) {
                     directory = null;
                 }
             } catch (InvalidPathException exception) {
