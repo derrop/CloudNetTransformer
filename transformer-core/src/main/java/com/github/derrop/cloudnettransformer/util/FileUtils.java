@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class FileUtils {
 
@@ -44,6 +45,10 @@ public class FileUtils {
     }
 
     public static void copyDirectory(Path sourceDirectory, Path targetDirectory, String... excludedFileNames) throws IOException {
+        copyDirectory(sourceDirectory, targetDirectory, path -> path.getFileName().toString(), excludedFileNames);
+    }
+
+    public static void copyDirectory(Path sourceDirectory, Path targetDirectory, Function<Path, String> fileNameProvider, String... excludedFileNames) throws IOException {
         if (Files.notExists(sourceDirectory)) {
             return;
         }
@@ -59,10 +64,15 @@ public class FileUtils {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (Arrays.asList(excludedFileNames).contains(file.getFileName().toString())) {
+                String fileName = fileNameProvider.apply(file);
+
+                if (Arrays.asList(excludedFileNames).contains(fileName)) {
                     return FileVisitResult.CONTINUE;
                 }
-                Files.copy(file, targetDirectory.resolve(sourceDirectory.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+                Path parent = file.getParent();
+                Path currentTargetDirectory = parent == null ? targetDirectory : targetDirectory.resolve(sourceDirectory.relativize(parent));
+
+                Files.copy(file, currentTargetDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
                 return FileVisitResult.CONTINUE;
             }
         });

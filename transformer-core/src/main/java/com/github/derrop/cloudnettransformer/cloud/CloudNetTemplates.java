@@ -23,6 +23,10 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
         return true;
     }
 
+    protected TemplateDirectory createTemplateDirectory(String group, String name, Path directory) {
+        return new TemplateDirectory(group, name, directory);
+    }
+
     protected void writeTemplates(Path directory, Collection<TemplateDirectory> templates) throws IOException {
         for (TemplateDirectory template : templates) {
             Path templateDirectory = directory.resolve(template.getPrefix()).resolve(template.getName());
@@ -48,7 +52,7 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
                         String group = prefixDirectory.getFileName().toString();
                         String name = nameDirectory.getFileName().toString();
 
-                        cloudSystem.getTemplates().add(new TemplateDirectory(group, name, nameDirectory));
+                        cloudSystem.getTemplates().add(this.createTemplateDirectory(group, name, nameDirectory));
                     }
                 }
             }
