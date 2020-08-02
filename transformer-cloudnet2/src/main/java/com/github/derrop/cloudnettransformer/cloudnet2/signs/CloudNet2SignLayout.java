@@ -2,7 +2,6 @@ package com.github.derrop.cloudnettransformer.cloudnet2.signs;
 
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
@@ -170,7 +169,7 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
                 ));
             }
         }
-        cloudSystem.setSignConfiguration(new SignConfiguration(configurations, cloudSystem.getMessages(MessageCategory.SIGNS)));
+        cloudSystem.setSignConfiguration(new SignConfiguration(configurations));
 
         return true;
     }

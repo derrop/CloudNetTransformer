@@ -5,6 +5,7 @@ public enum MessageCategory {
     GENERAL,
     INGAME_INFO,
     SIGNS,
+    NPCS,
     GENERAL_COMMANDS,
     ONLY_PROXY_JOIN,
     NETWORK

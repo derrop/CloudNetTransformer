@@ -155,6 +155,7 @@ public class CloudTransformer {
                 while ((line = reader.readLine()) != null) {
                     System.out.println(Ansi.ansi().fgBright(Ansi.Color.BLUE).a(line).reset());
                 }
+                System.out.println();
             }
         }
 

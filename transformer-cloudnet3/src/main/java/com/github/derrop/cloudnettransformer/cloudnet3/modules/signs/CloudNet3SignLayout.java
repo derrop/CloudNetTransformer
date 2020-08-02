@@ -62,11 +62,11 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         document.append("configurations", configurations);
 
         Map<String, String> messages = new HashMap<>();
-        messages.put("server-connecting-message", signConfiguration.getMessages().get(MessageType.SIGN_SERVER_CONNECTING));
-        messages.put("command-cloudsign-remove-success", signConfiguration.getMessages().get(MessageType.SIGN_REMOVE_SUCCESS));
-        messages.put("command-cloudsign-create-success", signConfiguration.getMessages().get(MessageType.SIGN_CREATE_SUCCESS));
-        messages.put("command-cloudsign-cleanup-success", signConfiguration.getMessages().get(MessageType.SIGN_CLEANUP_SUCCESS));
-        messages.put("command-cloudsign-sign-already-exist", signConfiguration.getMessages().get(MessageType.SIGN_ALREADY_EXISTS));
+        messages.put("server-connecting-message", cloudSystem.getMessage(MessageType.SIGN_SERVER_CONNECTING));
+        messages.put("command-cloudsign-remove-success", cloudSystem.getMessage(MessageType.SIGN_REMOVE_SUCCESS));
+        messages.put("command-cloudsign-create-success", cloudSystem.getMessage(MessageType.SIGN_CREATE_SUCCESS));
+        messages.put("command-cloudsign-cleanup-success", cloudSystem.getMessage(MessageType.SIGN_CLEANUP_SUCCESS));
+        messages.put("command-cloudsign-sign-already-exist", cloudSystem.getMessage(MessageType.SIGN_ALREADY_EXISTS));
         document.append("messages", messages);
 
         document.json().write(this.config(directory));;
@@ -83,21 +83,14 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
             return false;
         }
 
-        Document document = Documents.jsonStorage().read(configPath);
-        if (!document.contains("config")) {
-            return false;
-        }
-
-        Document config = document.getDocument("config");
+        Document config = Documents.jsonStorage().read(configPath).getDocument("config");
         if (!config.contains("configurations")) {
             return false;
         }
 
         Collection<GroupSignConfiguration> configurations = new ArrayList<>();
 
-        for (JsonElement element : config.getJsonArray("configurations")) {
-            Document configuration = Documents.newDocument(element.getAsJsonObject());
-
+        for (Document configuration : config.getDocuments("configurations")) {
             TaskSignLayout globalLayout = new TaskSignLayout(
                     null,
                     configuration.get("defaultOnlineLayout", SignLayout.class),
@@ -123,14 +116,13 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         }
 
         Map<String, String> messages = config.get("messages", TypeToken.getParameterized(Map.class, String.class, String.class).getType());
-        Map<MessageType, String> outMessages = new HashMap<>(messages.size());
-        outMessages.put(MessageType.SIGN_SERVER_CONNECTING, messages.get("server-connecting-message"));
-        outMessages.put(MessageType.SIGN_REMOVE_SUCCESS, messages.get("command-cloudsign-remove-success"));
-        outMessages.put(MessageType.SIGN_CREATE_SUCCESS, messages.get("command-cloudsign-create-success"));
-        outMessages.put(MessageType.SIGN_CLEANUP_SUCCESS, messages.get("command-cloudsign-cleanup-success"));
-        outMessages.put(MessageType.SIGN_ALREADY_EXISTS, messages.get("command-cloudsign-sign-already-exist"));
+        cloudSystem.setMessage(MessageType.SIGN_SERVER_CONNECTING, messages.get("server-connecting-message"));
+        cloudSystem.setMessage(MessageType.SIGN_REMOVE_SUCCESS, messages.get("command-cloudsign-remove-success"));
+        cloudSystem.setMessage(MessageType.SIGN_CREATE_SUCCESS, messages.get("command-cloudsign-create-success"));
+        cloudSystem.setMessage(MessageType.SIGN_CLEANUP_SUCCESS, messages.get("command-cloudsign-cleanup-success"));
+        cloudSystem.setMessage(MessageType.SIGN_ALREADY_EXISTS, messages.get("command-cloudsign-sign-already-exist"));
 
-        cloudSystem.setSignConfiguration(new SignConfiguration(configurations, outMessages));
+        cloudSystem.setSignConfiguration(new SignConfiguration(configurations));
 
         for (GroupSignConfiguration configuration : configurations) {
             for (ServiceGroup group : cloudSystem.getGroups()) {

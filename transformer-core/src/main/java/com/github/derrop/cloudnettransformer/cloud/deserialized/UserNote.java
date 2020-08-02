@@ -34,7 +34,7 @@ public class UserNote {
     }
 
     public UserNote ansi(Ansi ansi) {
-        this.ansi = ansi.a(this.message).reset();
+        this.ansi = ansi == null ? null : ansi.a(this.message).reset();
         return this;
     }
 

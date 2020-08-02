@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer.cloud.deserialized;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUserProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.player.PlayerProvider;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 // TODO convert NPCs (CloudNet 3) and Mobs (CloudNet 2)
 public class CloudSystem {
 
+    private NPCConfiguration npcConfiguration;
     private SignConfiguration signConfiguration;
     private PermissionConfiguration permissionConfiguration;
     private transient PermissionUserProvider permissionUserProvider;
@@ -86,6 +88,14 @@ public class CloudSystem {
 
     public void setSignConfiguration(SignConfiguration signConfiguration) {
         this.signConfiguration = signConfiguration;
+    }
+
+    public NPCConfiguration getNpcConfiguration() {
+        return this.npcConfiguration;
+    }
+
+    public void setNpcConfiguration(NPCConfiguration npcConfiguration) {
+        this.npcConfiguration = npcConfiguration;
     }
 
     public CloudConfig getConfig() {
