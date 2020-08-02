@@ -18,11 +18,16 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           architecture: x64
-          
+
       - name: Build with Maven
         run: mvn clean package
 
+      - name: Prepare upload
+      - run: |
+          mkdir -p upload/;
+          unzip transformer-loader/target/CloudNetTransformer.zip -d upload;
+
       - uses: actions/upload-artifact@master
         with:
-          name: CloudNet-Transformer
-          path: transformer-loader/target/CloudNetTransformer.zip
+          name: CloudNetTransformer
+          path: upload/
