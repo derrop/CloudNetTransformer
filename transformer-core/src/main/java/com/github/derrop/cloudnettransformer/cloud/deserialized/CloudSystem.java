@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Databas
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.PlacedNPC;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUserProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.player.PlayerProvider;
@@ -16,13 +17,14 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.director
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.PlacedSign;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.SignConfiguration;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-// TODO convert NPCs (CloudNet 3) and Mobs (CloudNet 2)
 public class CloudSystem {
 
     private NPCConfiguration npcConfiguration;
@@ -30,31 +32,30 @@ public class CloudSystem {
     private PermissionConfiguration permissionConfiguration;
     private transient PermissionUserProvider permissionUserProvider;
     private transient PlayerProvider playerProvider;
-    private final Collection<StaticServiceDirectory> staticServices = new ArrayList<>();
+    private final Collection<StaticServiceDirectory> staticServices = new HashSet<>();
     private CloudConfig config;
 
-    private final Map<ServiceEnvironment, Collection<TemplateDirectory>> globalTemplates = new HashMap<>();
+    private final Multimap<ServiceEnvironment, TemplateDirectory> globalTemplates = HashMultimap.create();
 
     private final Map<ServiceEnvironment, Path> applicationFiles = new HashMap<>();
 
-    private final Collection<ServiceTask> tasks = new ArrayList<>();
-    private final Collection<ServiceGroup> groups = new ArrayList<>();
-    private final Collection<TemplateDirectory> templates = new ArrayList<>();
-    private final Collection<PlacedSign> signs = new ArrayList<>();
+    private final Collection<ServiceTask> tasks = new HashSet<>();
+    private final Collection<ServiceGroup> groups = new HashSet<>();
+    private final Collection<TemplateDirectory> templates = new HashSet<>();
+    private final Collection<PlacedSign> signs = new HashSet<>();
+    private final Collection<PlacedNPC> npcs = new HashSet<>();
     private transient DatabaseProvider databaseProvider;
 
-    private final Collection<FallbackConfiguration> fallbackConfigurations = new ArrayList<>();
-    private final Collection<MotdConfiguration> motdConfigurations = new ArrayList<>();
-    private final Collection<TabListConfiguration> tabListConfigurations = new ArrayList<>();
-    private final Collection<LoginConfiguration> loginConfigurations = new ArrayList<>();
+    private final Collection<FallbackConfiguration> fallbackConfigurations = new HashSet<>();
+    private final Collection<MotdConfiguration> motdConfigurations = new HashSet<>();
+    private final Collection<TabListConfiguration> tabListConfigurations = new HashSet<>();
+    private final Collection<LoginConfiguration> loginConfigurations = new HashSet<>();
 
-    private final Map<MessageType, String> messages = new HashMap<>();
-    private final Collection<UserNote> notes = new ArrayList<>();
+    private final List<UserNote> notes = new ArrayList<>();
+    private final Map<MessageType, String> messages;
 
     public CloudSystem() {
-        for (MessageType type : MessageType.values()) {
-            this.messages.put(type, type.getDefaultMessage());
-        }
+        this.messages = Arrays.stream(MessageType.values()).collect(Collectors.toMap(Function.identity(), MessageType::getDefaultMessage));
     }
 
     public void setMessage(MessageType type, String message) {
@@ -142,6 +143,10 @@ public class CloudSystem {
         return this.signs;
     }
 
+    public Collection<PlacedNPC> getNpcs() {
+        return this.npcs;
+    }
+
     public Collection<TemplateDirectory> getTemplates() {
         return this.templates;
     }
@@ -170,7 +175,7 @@ public class CloudSystem {
         this.notes.add(note);
     }
 
-    public Collection<UserNote> getNotes() {
+    public List<UserNote> getNotes() {
         return this.notes;
     }
 
@@ -225,16 +230,13 @@ public class CloudSystem {
         }
     }
 
-    public Map<ServiceEnvironment, Collection<TemplateDirectory>> getGlobalTemplates() {
-        return this.globalTemplates;
-    }
-
     public void addGlobalTemplate(ServiceEnvironment environment, TemplateDirectory template) {
-        this.globalTemplates.computeIfAbsent(environment, e -> new ArrayList<>()).add(template);
+        this.globalTemplates.put(environment, template);
     }
 
     public Collection<TemplateDirectory> getGlobalTemplates(ServiceEnvironment environment) {
-        return this.globalTemplates.getOrDefault(environment, Collections.emptyList());
+        Collection<TemplateDirectory> directories = this.globalTemplates.get(environment);
+        return directories == null ? Collections.emptyList() : directories;
     }
 
     public Map<ServiceEnvironment, Path> getApplicationFiles() {

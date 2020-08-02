@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+// TODO transform any placeholders
 public class CloudTransformer {
 
     private static final String PROMPT = Ansi.ansi()
