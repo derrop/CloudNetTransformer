@@ -90,6 +90,18 @@
       │      │ groupMode `LOBBY` or `STATIC_LOBBY`. If you want to create new ones     │      │
       │      │ later, just use the `npc` command in the console to create entries      │      │
       │      │ for specific groups.                                                    │      │
+      ├──────┼────────────────────────────────────┬────────────────────────────────────┼──────┤
+      │      │       Everything in the Cloud      │  Everything split up into modules  │      │
+      │      ├────────────────────────────────────┴────────────────────────────────────┤      │
+      │      │ At the beginning of CloudNet 2 everything was directly in the Cloud,    │      │
+      │      │ then in some version some components have been tried to be moved into   │      │
+      │      │ modules, this didn't quite work out. In CloudNet 3 most of the features │      │
+      │      │ are planned to be in modules since the beginning.                       │      │
+      │      │ The Bridge module handles necessary features for CloudNet to be used    │      │
+      │      │ with a proxies and minecraft servers, including fallbacks and the /hub  │      │
+      │      │ command.                                                                │      │
+      │      │ The SyncProxy module handles the visual stuff on the proxies like the   │      │
+      │      │ Motd and TabList Header/Footer.                                         │      │
       ├──────┴─────────────────────────────────────────────────────────────────────────┴──────┤
       │                                                                                       │
       └───────────────────────────────────── Description ─────────────────────────────────────┘
