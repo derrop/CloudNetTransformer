@@ -25,4 +25,4 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: CloudNet-Transformer
-          path: transformer-loader/target/CloudNetTransformer*
+          path: transformer-loader/target/CloudNetTransformer.zip
