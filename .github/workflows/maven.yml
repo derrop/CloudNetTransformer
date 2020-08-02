@@ -23,7 +23,7 @@ jobs:
         run: mvn clean package
 
       - name: Prepare upload
-      - run: |
+        run: |
           mkdir -p upload/;
           unzip transformer-loader/target/CloudNetTransformer.zip -d upload;
 
