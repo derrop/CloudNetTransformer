@@ -5,9 +5,14 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.AnsiConsole;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -18,18 +23,19 @@ import java.util.stream.Collectors;
 
 public class CloudTransformer {
 
-    private final BufferedReader reader; // TODO: replace with JLine
+    private static final String PROMPT = Ansi.ansi()
+            .fgBrightRed().a(System.getProperty("user.name"))
+            .reset().fgBrightDefault().a(" > ")
+            .toString();
 
-    public CloudTransformer(BufferedReader reader) {
+    private final LineReader reader;
+
+    public CloudTransformer(LineReader reader) {
         this.reader = reader;
     }
 
     public String readLine() {
-        try {
-            return this.reader.readLine();
-        } catch (IOException exception) {
-            throw new IllegalStateException("Failed to read line from console", exception);
-        }
+        return this.reader.readLine(PROMPT);
     }
 
     public void transform(Path sourceDirectory, CloudType sourceType, CloudType targetType) throws IOException {
@@ -64,9 +70,13 @@ public class CloudTransformer {
         }
 
         if (!cloudSystem.getNotes().isEmpty()) {
-            System.out.println("Notes (you can still read them later in the transformerNotes.txt in the output directory):");
+            System.out.println();
+            System.out.println(Ansi.ansi().fgBrightCyan().a("Notes (you can still read them later in the transformerNotes.txt in the output directory):").reset());
+            for (UserNote note : cloudSystem.getNotes()) {
+                System.out.println(note.formatAnsi());
+            }
+
             Collection<String> notes = cloudSystem.getNotes().stream().map(UserNote::format).collect(Collectors.toList());
-            notes.forEach(System.out::println);
             Files.write(targetDirectory.resolve("transformerNotes.txt"), notes, StandardOpenOption.CREATE);
         }
     }
@@ -136,7 +146,20 @@ public class CloudTransformer {
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+        AnsiConsole.systemInstall();
+
+        InputStream header = CloudTransformer.class.getClassLoader().getResourceAsStream("header.txt");
+        if (header != null) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(header, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(Ansi.ansi().fgBright(Ansi.Color.BLUE).a(line).reset());
+                }
+            }
+        }
+
+        LineReader reader = LineReaderBuilder.builder().build();
+
         CloudTransformer transformer = new CloudTransformer(reader);
 
         transformer.askConsole();

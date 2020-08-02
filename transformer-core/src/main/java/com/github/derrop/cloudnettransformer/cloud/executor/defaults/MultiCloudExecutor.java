@@ -5,6 +5,7 @@ import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import org.fusesource.jansi.Ansi;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -58,13 +59,13 @@ public class MultiCloudExecutor implements CloudExecutor {
 
             System.out.println("Executing '" + reader.getName() + "' as " + type + "...");
             if (!reader.getExecutor().execute(type, cloudSystem, directory)) {
-                System.err.println("Failed to execute '" + reader.getName() + "'");
+                System.err.println(Ansi.ansi().fgBrightRed().a("Failed to execute '" + reader.getName() + "'").reset());
                 if (reader.getDescription().optional()) {
                     continue;
                 }
                 return false;
             }
-            System.out.println("Successfully executed '" + reader.getName() + "'");
+            System.out.println(Ansi.ansi().fgBrightGreen().a("Successfully executed '" + reader.getName() + "'").reset());
         }
         return true;
     }

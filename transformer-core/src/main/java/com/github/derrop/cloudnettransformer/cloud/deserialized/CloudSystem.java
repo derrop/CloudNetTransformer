@@ -152,7 +152,7 @@ public class CloudSystem {
         String[] lines = note.getMessage().split("\n");
         if (lines.length != 1) {
             for (String line : lines) {
-                this.notes.add(UserNote.of(note.getLevel(), line));
+                this.notes.add(UserNote.of(note.getLevel(), line).ansi(note.getAnsi()));
             }
             return;
         }
