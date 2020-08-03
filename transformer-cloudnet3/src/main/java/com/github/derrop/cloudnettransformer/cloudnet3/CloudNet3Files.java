@@ -12,7 +12,8 @@ public class CloudNet3Files extends MultiCloudExecutor {
     public CloudNet3Files() {
         super(Arrays.asList(
                 new FileDownloaderExecutor("CloudNet-Node", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-launcher/build/libs/launcher.jar", "launcher.jar"),
-                new StartFileWriter("CloudNet-Node", "https://raw.githubusercontent.com/CloudNetService/CloudNet-v3/master/.template/start", "start")
+                new StartFileWriter("CloudNet-Node", "https://raw.githubusercontent.com/CloudNetService/CloudNet-v3/master/.template/start", "start"),
+                new FileDownloaderExecutor("CloudNet-SmartModule", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-smart/build/libs/cloudnet-smart.jar", "modules/cloudnet-smart.jar")
         ));
     }
 }
