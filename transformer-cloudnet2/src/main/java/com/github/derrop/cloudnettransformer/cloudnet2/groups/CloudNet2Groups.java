@@ -73,8 +73,6 @@ public class CloudNet2Groups implements CloudReaderWriter {
                     )
                     .append("settings", Documents.newDocument());
 
-            // TODO implement priorityService (or smartConfig in CloudNet 3)?
-
             Documents.newDocument("group", group).json().write(groupsDirectory.resolve(task.getName() + ".json"));;
         }
 
@@ -122,6 +120,7 @@ public class CloudNet2Groups implements CloudReaderWriter {
                         44955,
                         group.getInt("minOnlineServers"),
                         group.getInt("maxOnlineServers"),
+                        group.getInt("percentForNewServerAutomatically"),
                         ServiceEnvironment.MINECRAFT_SERVER,
                         TemplateInstallerType.BALANCED,
                         Documents.newDocument()

@@ -98,7 +98,7 @@
       │      │ modules, this didn't quite work out. In CloudNet 3 most of the features │      │
       │      │ are planned to be in modules since the beginning.                       │      │
       │      │ The Bridge module handles necessary features for CloudNet to be used    │      │
-      │      │ with a proxies and minecraft servers, including fallbacks and the /hub  │      │
+      │      │ with proxies and minecraft servers, including fallbacks and the /hub    │      │
       │      │ command.                                                                │      │
       │      │ The SyncProxy module handles the visual stuff on the proxies like the   │      │
       │      │ Motd and TabList Header/Footer.                                         │      │

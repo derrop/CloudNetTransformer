@@ -71,6 +71,9 @@ public class CloudNet3Tasks implements CloudReaderWriter {
                     .append("properties", Documents.newDocument().append("smartConfig", Documents.newDocument()
                             .append("enabled", task.getTemplateInstallerType() != TemplateInstallerType.ALL || task.getMaxServices() != -1)
                             .append("templateInstaller", templateInstaller)
+                            .append("percentOfPlayersForANewServiceByInstance", task.getPlayersPercentForNewServer())
+                            .append("forAnewInstanceDelayTimeInSeconds", -1)
+                            .append("minNonFullServices", task.getPlayersPercentForNewServer() < 0 ? 0 : 1)
                             .append("maxServiceCount", task.getMaxServices())
                     ));
 
@@ -130,6 +133,7 @@ public class CloudNet3Tasks implements CloudReaderWriter {
                         task.getInt("startPort"),
                         task.getInt("minServiceCount"),
                         smartConfigEnabled ? smartConfig.getInt("maxServiceCount") : -1,
+                        smartConfigEnabled ? smartConfig.getInt("percentOfPlayersForANewServiceByInstance") : -1,
                         environment,
                         templateInstaller,
                         Documents.newDocument()

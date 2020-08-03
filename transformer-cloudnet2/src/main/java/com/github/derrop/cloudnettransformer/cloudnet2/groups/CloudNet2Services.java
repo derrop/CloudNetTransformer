@@ -283,6 +283,7 @@ public class CloudNet2Services implements CloudReaderWriter {
                     proxyGroup.getInt("startPort"),
                     proxyGroup.getInt("startup"),
                     -1,
+                    -1,
                     ServiceEnvironment.BUNGEECORD,
                     TemplateInstallerType.ALL,
                     Documents.newDocument()

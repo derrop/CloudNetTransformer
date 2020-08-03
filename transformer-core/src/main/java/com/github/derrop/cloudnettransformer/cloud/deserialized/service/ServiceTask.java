@@ -14,6 +14,7 @@ public class ServiceTask extends ServiceConfigurationBase {
     private final int startPort;
     private final int minServices;
     private final int maxServices;
+    private final double playersPercentForNewServer;
     private final ServiceEnvironment environment;
     private final TemplateInstallerType templateInstallerType;
     private final Document properties;
@@ -22,7 +23,7 @@ public class ServiceTask extends ServiceConfigurationBase {
                        Collection<ServiceTemplate> templates, Collection<ServiceInclusion> inclusions, Collection<ServiceDeployment> deployments,
                        Collection<String> jvmOptions, boolean maintenance, boolean staticServices, Collection<String> nodes,
                        Collection<String> groups, int maxMemory, int startPort, int minServices, int maxServices,
-                       ServiceEnvironment environment, TemplateInstallerType templateInstallerType, Document properties) {
+                       double playersPercentForNewServer, ServiceEnvironment environment, TemplateInstallerType templateInstallerType, Document properties) {
         super(name, templates, inclusions, deployments, jvmOptions);
         this.maintenance = maintenance;
         this.staticServices = staticServices;
@@ -32,6 +33,7 @@ public class ServiceTask extends ServiceConfigurationBase {
         this.startPort = startPort;
         this.minServices = minServices;
         this.maxServices = maxServices;
+        this.playersPercentForNewServer = playersPercentForNewServer;
         this.environment = environment;
         this.templateInstallerType = templateInstallerType;
         this.properties = properties;
@@ -67,6 +69,10 @@ public class ServiceTask extends ServiceConfigurationBase {
 
     public int getMaxServices() {
         return this.maxServices;
+    }
+
+    public double getPlayersPercentForNewServer() {
+        return this.playersPercentForNewServer;
     }
 
     public ServiceEnvironment getEnvironment() {
