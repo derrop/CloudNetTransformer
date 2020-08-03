@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloudnet2.mobs;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.NPCAction;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.PlacedNPC;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.ProfileProperty;
@@ -27,6 +28,8 @@ public class CloudNet2Mobs implements CloudReaderWriter {
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
+        Map<PlaceholderType, String> placeholders = new HashMap<>();
+        this.fillInfoLinePlaceholders(placeholders);
 
         Map<UUID, Document> mobs = cloudSystem.getNpcs().stream()
                 .collect(Collectors.toMap(PlacedNPC::getUniqueId, npc -> Documents.newDocument()
@@ -47,12 +50,18 @@ public class CloudNet2Mobs implements CloudReaderWriter {
                                 .append("yaw", npc.getYaw())
                                 .append("pitch", npc.getPitch())
                         )
-                        .append("displayMessage", npc.getInfoLine())
+                        .append("displayMessage", cloudSystem.updatePlaceholders(npc.getInfoLine(), placeholders))
                         .append("metaDataDoc", Documents.newDocument().append("dataCatcher", Documents.newDocument()))));
 
         database.insert(DOCUMENT_NAME, Documents.newDocument("mobs", mobs));
 
         return true;
+    }
+
+    private void fillInfoLinePlaceholders(Map<PlaceholderType, String> map) {
+        map.put(PlaceholderType.NPCS_INFO_MAX_PLAYERS, "%max_players%");
+        map.put(PlaceholderType.NPCS_INFO_GROUP, "%group%");
+        map.put(PlaceholderType.NPCS_INFO_ONLINE_PLAYERS, "%group_online%");
     }
 
     @Override
@@ -96,6 +105,8 @@ public class CloudNet2Mobs implements CloudReaderWriter {
                     NPCAction.NOTHING
             ));
         });
+
+        this.fillInfoLinePlaceholders(cloudSystem.getPlaceholders());
 
         return true;
     }

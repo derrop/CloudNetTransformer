@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer.cloudnet2.signs;
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
@@ -14,9 +15,7 @@ import com.google.gson.JsonElement;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -46,9 +45,9 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
 
         Collection<Document> groupLayouts = new ArrayList<>();
         for (GroupSignConfiguration configuration : signConfiguration.getConfigurations()) {
-            groupLayouts.add(this.asJson("default", configuration.getGlobalLayout()));
+            groupLayouts.add(this.asJson(cloudSystem, "default", configuration.getGlobalLayout()));
             for (TaskSignLayout taskLayout : configuration.getTaskLayouts()) {
-                groupLayouts.add(this.asJson(taskLayout.getTask(), taskLayout));
+                groupLayouts.add(this.asJson(cloudSystem, taskLayout.getTask(), taskLayout));
             }
         }
         config.append("groupLayouts", groupLayouts);
@@ -56,7 +55,7 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
         SignLayout[] searchLayouts = mainSignConfiguration.getSearchLayout().getSignLayouts().toArray(new SignLayout[0]);
         Document[] searchLayoutJson = new DefaultDocument[searchLayouts.length];
         for (int i = 0; i < searchLayouts.length; i++) {
-            searchLayoutJson[i] = this.asJson("loading" + (i + 1), searchLayouts[i]);
+            searchLayoutJson[i] = this.asJson(cloudSystem, "loading" + (i + 1), searchLayouts[i]);
         }
         config.append("searchingAnimation",
                 Documents.newDocument()
@@ -70,24 +69,52 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
         return true;
     }
 
-    private Document asJson(String name, TaskSignLayout layout) {
+    private Document asJson(CloudSystem cloudSystem, String name, TaskSignLayout layout) {
         return Documents.newDocument()
                 .append("name", name)
                 .append("layouts", Arrays.asList(
-                        this.asJson("empty", layout.getEmptyLayout()),
-                        this.asJson("online", layout.getOnlineLayout()),
-                        this.asJson("full", layout.getFullLayout()),
-                        this.asJson("maintenance", layout.getMaintenanceLayout())
+                        this.asJson(cloudSystem, "empty", layout.getEmptyLayout()),
+                        this.asJson(cloudSystem, "online", layout.getOnlineLayout()),
+                        this.asJson(cloudSystem, "full", layout.getFullLayout()),
+                        this.asJson(cloudSystem, "maintenance", layout.getMaintenanceLayout())
                 ));
     }
 
-    private Document asJson(String type, SignLayout layout) {
+    private Document asJson(CloudSystem cloudSystem, String type, SignLayout layout) {
+        Map<PlaceholderType, String> placeholders = new HashMap<>();
+        this.fillPlaceholders(placeholders);
+
+        String[] lines = layout == null ? new String[]{"", "", "", ""} : layout.getLines();
+        for (int i = 0; i < lines.length; i++) {
+            lines[i] = cloudSystem.updatePlaceholders(lines[i], placeholders);
+        }
         return Documents.newDocument()
                 .append("name", type)
-                .append("signLayout", layout == null ? new String[]{"", "", "", ""} : layout.getLines())
+                .append("signLayout", lines)
                 .append("blockId", 0)
                 .append("blockName", layout == null ? "STONE" : layout.getBlockType())
                 .append("subId", layout == null ? 0 : layout.getSubId());
+    }
+
+    private void fillPlaceholders(Map<PlaceholderType, String> map) {
+        // online/empty/full layout
+        map.put(PlaceholderType.SIGNS_NAME, "%server%");
+        map.put(PlaceholderType.SIGNS_TASK_ID, "%id%");
+        map.put(PlaceholderType.SIGNS_HOST, "%host%");
+        map.put(PlaceholderType.SIGNS_PORT, "%port%");
+        map.put(PlaceholderType.SIGNS_MEMORY, "%memory%");
+        map.put(PlaceholderType.SIGNS_ONLINE_PLAYERS, "%online_players%");
+        map.put(PlaceholderType.SIGNS_MAX_PLAYERS, "%max_players%");
+        map.put(PlaceholderType.SIGNS_MOTD, "%motd%");
+        map.put(PlaceholderType.SIGNS_STATE, "%state%");
+        map.put(PlaceholderType.SIGNS_NODE, "%wrapper%");
+        map.put(PlaceholderType.SIGNS_EXTRA, "%extra%");
+        map.put(PlaceholderType.SIGNS_TEMPLATE, "%template%");
+        map.put(PlaceholderType.SIGNS_TASK, "%group%");
+
+        // loading/maintenance layout
+        map.put(PlaceholderType.SIGNS_TARGET_GROUP, "%group%");
+        map.put(PlaceholderType.SIGNS_PLACED_GROUP, "%from%");
     }
 
     @Override
@@ -170,6 +197,8 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
             }
         }
         cloudSystem.setSignConfiguration(new SignConfiguration(configurations));
+
+        this.fillPlaceholders(cloudSystem.getPlaceholders());
 
         return true;
     }

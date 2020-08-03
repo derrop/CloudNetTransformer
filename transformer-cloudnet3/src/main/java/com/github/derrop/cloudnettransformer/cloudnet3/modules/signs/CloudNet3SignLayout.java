@@ -2,11 +2,13 @@ package com.github.derrop.cloudnettransformer.cloudnet3.modules.signs;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
+import com.github.derrop.cloudnettransformer.cloudnet3.CloudNet3Utils;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.JsonElement;
@@ -62,12 +64,15 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         document.append("configurations", configurations);
 
         Map<String, String> messages = new HashMap<>();
+        // TODO placeholders in the messages
         messages.put("server-connecting-message", cloudSystem.getMessage(MessageType.SIGN_SERVER_CONNECTING));
         messages.put("command-cloudsign-remove-success", cloudSystem.getMessage(MessageType.SIGN_REMOVE_SUCCESS));
         messages.put("command-cloudsign-create-success", cloudSystem.getMessage(MessageType.SIGN_CREATE_SUCCESS));
         messages.put("command-cloudsign-cleanup-success", cloudSystem.getMessage(MessageType.SIGN_CLEANUP_SUCCESS));
         messages.put("command-cloudsign-sign-already-exist", cloudSystem.getMessage(MessageType.SIGN_ALREADY_EXISTS));
         document.append("messages", messages);
+
+
 
         document.json().write(this.config(directory));;
 
@@ -131,6 +136,8 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
                 }
             }
         }
+
+        CloudNet3Utils.fillServiceInfoPlaceholders(PlaceholderCategory.SIGNS, cloudSystem.getPlaceholders());
 
         return true;
     }

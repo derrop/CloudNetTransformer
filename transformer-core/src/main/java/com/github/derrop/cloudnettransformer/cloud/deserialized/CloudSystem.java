@@ -3,6 +3,8 @@ package com.github.derrop.cloudnettransformer.cloud.deserialized;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageCategory;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderCategory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.PlacedNPC;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
@@ -53,6 +55,7 @@ public class CloudSystem {
 
     private final List<UserNote> notes = new ArrayList<>();
     private final Map<MessageType, String> messages;
+    private final Map<PlaceholderType, String> placeholders = new HashMap<>();
 
     public CloudSystem() {
         this.messages = Arrays.stream(MessageType.values()).collect(Collectors.toMap(Function.identity(), MessageType::getDefaultMessage));
@@ -81,6 +84,42 @@ public class CloudSystem {
         return this.messages.entrySet().stream()
                 .filter(entry -> collection.contains(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public String getPlaceholder(PlaceholderType type) {
+        return this.placeholders.getOrDefault(type, "Placeholder not available");
+    }
+
+    public Map<PlaceholderType, String> getPlaceholders(PlaceholderCategory category) {
+        return this.placeholders.entrySet().stream()
+                .filter(entry -> entry.getKey().getCategory() == category)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public void setPlaceholder(PlaceholderType type, String placeholder) {
+        this.placeholders.put(type, placeholder);
+    }
+
+    public String updatePlaceholders(String text, Map<PlaceholderType, String> replacements) {
+        Collection<PlaceholderCategory> categories = new HashSet<>();
+        for (Map.Entry<PlaceholderType, String> entry : replacements.entrySet()) {
+            categories.add(entry.getKey().getCategory());
+            if (this.placeholders.containsKey(entry.getKey())) {
+                text = text.replace(this.placeholders.get(entry.getKey()), entry.getValue());
+            }
+        }
+        for (PlaceholderCategory category : categories) {
+            for (Map.Entry<PlaceholderType, String> entry : this.getPlaceholders(category).entrySet()) {
+                if (!replacements.containsKey(entry.getKey())) {
+                    text = text.replace(entry.getValue(), "Placeholder not available");
+                }
+            }
+        }
+        return text;
+    }
+
+    public Map<PlaceholderType, String> getPlaceholders() {
+        return this.placeholders;
     }
 
     public SignConfiguration getSignConfiguration() {

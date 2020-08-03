@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloudnet3.modules.npcs;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.NPCAction;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.PlacedNPC;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.ProfileProperty;
@@ -14,6 +15,8 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,12 +29,14 @@ public class CloudNet3NPCs implements CloudReaderWriter {
     @Override
     public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
+        Map<PlaceholderType, String> placeholders = new HashMap<>();
+        this.fillInfoLinePlaceholders(placeholders);
 
         database.insert(DOCUMENT_NAME, Documents.newDocument("npcs", cloudSystem.getNpcs().stream()
                 .map(npc -> Documents.newDocument()
                         .append("uuid", npc.getUniqueId())
                         .append("displayName", npc.getDisplayName())
-                        .append("infoLine", npc.getInfoLine())
+                        .append("infoLine", cloudSystem.updatePlaceholders(npc.getInfoLine(), placeholders))
                         .append("profileProperties", npc.getProfileProperties())
                         .append("position", Documents.newDocument()
                                 .append("x", npc.getX())
@@ -53,6 +58,13 @@ public class CloudNet3NPCs implements CloudReaderWriter {
         );
 
         return true;
+    }
+
+    private void fillInfoLinePlaceholders(Map<PlaceholderType, String> map) {
+        map.put(PlaceholderType.NPCS_INFO_MAX_PLAYERS, "%max_players%");
+        map.put(PlaceholderType.NPCS_INFO_GROUP, "%group%");
+        map.put(PlaceholderType.NPCS_INFO_ONLINE_PLAYERS, "%online_players%");
+        map.put(PlaceholderType.NPCS_INFO_ONLINE_SERVERS, "%online_servers%");
     }
 
     @Override
@@ -88,6 +100,8 @@ public class CloudNet3NPCs implements CloudReaderWriter {
                     npc.get("leftClickAction", NPCAction.class)
             ));
         }
+
+        this.fillInfoLinePlaceholders(cloudSystem.getPlaceholders());
 
         return true;
     }

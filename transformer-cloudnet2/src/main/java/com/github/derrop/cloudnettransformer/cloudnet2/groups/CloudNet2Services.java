@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer.cloudnet2.groups;
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Permission;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUser;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.Fallback;
@@ -120,10 +121,10 @@ public class CloudNet2Services implements CloudReaderWriter {
                     .ifPresent(loginConfiguration -> this.writeLoginConfiguration(proxyConfig, loginConfiguration));
 
             cloudSystem.getTabListConfigurations().stream().filter(config -> config.getTargetGroup().equals(task.getName())).findFirst()
-                    .ifPresent(tabListConfiguration -> this.writeTabListConfiguration(proxyConfig, tabListConfiguration));
+                    .ifPresent(tabListConfiguration -> this.writeTabListConfiguration(cloudSystem, proxyConfig, tabListConfiguration));
 
             cloudSystem.getMotdConfigurations().stream().filter(config -> config.getTargetGroup().equals(task.getName())).findFirst()
-                    .ifPresent(motdConfiguration -> this.writeMotdConfiguration(proxyConfig, motdConfiguration));
+                    .ifPresent(motdConfiguration -> this.writeMotdConfiguration(cloudSystem, proxyConfig, motdConfiguration));
 
             cloudSystem.getFallbackConfigurations().stream().filter(config -> config.getTargetGroup().equals(task.getName())).findFirst()
                     .ifPresent(fallbackConfiguration -> this.writeFallbackConfiguration(proxyConfig, fallbackConfiguration));
@@ -145,7 +146,7 @@ public class CloudNet2Services implements CloudReaderWriter {
                 .append("whitelist", loginConfiguration.getWhitelist());
     }
 
-    private void writeTabListConfiguration(Document proxyConfig, TabListConfiguration tabListConfiguration) {
+    private void writeTabListConfiguration(CloudSystem cloudSystem, Document proxyConfig, TabListConfiguration tabListConfiguration) {
         if (!tabListConfiguration.getEntries().isEmpty()) {
             proxyConfig.append("enabled", true);
         }
@@ -155,12 +156,12 @@ public class CloudNet2Services implements CloudReaderWriter {
         proxyConfig.append("tabList",
                 Documents.newDocument()
                         .append("enabled", tabList != null)
-                        .append("header", tabList != null ? tabList.getHeader() : "")
-                        .append("footer", tabList != null ? tabList.getFooter() : "")
+                        .append("header", this.updateTabPlaceholders(cloudSystem, tabList != null ? tabList.getHeader() : ""))
+                        .append("footer", this.updateTabPlaceholders(cloudSystem, tabList != null ? tabList.getFooter() : ""))
         );
     }
 
-    private void writeMotdConfiguration(Document proxyConfig, MotdConfiguration motdConfiguration) {
+    private void writeMotdConfiguration(CloudSystem cloudSystem, Document proxyConfig, MotdConfiguration motdConfiguration) {
         proxyConfig.append("enabled", true);
 
         MotdLayout maintenanceMotd = motdConfiguration.getMaintenanceLayouts().isEmpty() ? null : motdConfiguration.getMaintenanceLayouts().iterator().next();
@@ -180,7 +181,10 @@ public class CloudNet2Services implements CloudReaderWriter {
                         .append("playerInfo", motdLayout.getPlayerInfo())
                         .append("autoSlot", Documents.newDocument().append("enabled", motdLayout.isAutoSlot()).append("dynamicSlotSize", motdLayout.getAutoSlotDistance()));
 
-                motdLayouts.add(Documents.newDocument().append("firstLine", motdLayout.getFirstLine()).append("secondLine", motdLayout.getSecondLine()));
+                motdLayouts.add(Documents.newDocument()
+                        .append("firstLine", this.updateLoginPlaceholders(cloudSystem, motdLayout.getFirstLine()))
+                        .append("secondLine", this.updateLoginPlaceholders(cloudSystem, motdLayout.getSecondLine()))
+                );
             }
         }
 
@@ -203,6 +207,32 @@ public class CloudNet2Services implements CloudReaderWriter {
         proxyConfig.append("dynamicFallback", dynamicFallback);
     }
 
+    private String updateTabPlaceholders(CloudSystem cloudSystem, String input) {
+        Map<PlaceholderType, String> map = new HashMap<>();
+        this.fillTabPlaceholders(map);
+        return cloudSystem.updatePlaceholders(input, map);
+    }
+
+    private String updateLoginPlaceholders(CloudSystem cloudSystem, String input) {
+        Map<PlaceholderType, String> map = new HashMap<>();
+        this.fillLoginPlaceholders(map);
+        return cloudSystem.updatePlaceholders(input, map);
+    }
+
+    private void fillTabPlaceholders(Map<PlaceholderType, String> map) {
+        map.put(PlaceholderType.TAB_PROXY, "%proxy%");
+        map.put(PlaceholderType.TAB_SERVER, "%server%");
+        map.put(PlaceholderType.TAB_ONLINE_PLAYERS, "%online_players%");
+        map.put(PlaceholderType.TAB_MAX_PLAYERS, "%max_players%");
+        map.put(PlaceholderType.TAB_SERVER_TASK, "%group%");
+        map.put(PlaceholderType.TAB_PROXY_TASK, "%proxy_group%");
+    }
+
+    private void fillLoginPlaceholders(Map<PlaceholderType, String> map) {
+        map.put(PlaceholderType.MOTD_PROXY, "%proxy%");
+        map.put(PlaceholderType.MOTD_VERSION, "%version%");
+    }
+
     @Override
     public boolean read(CloudSystem cloudSystem, Path directory) {
 
@@ -215,6 +245,9 @@ public class CloudNet2Services implements CloudReaderWriter {
 
         Collection<Document> wrapper = document.getDocuments("wrapper");
         Collection<Document> proxyGroups = document.getDocuments("proxyGroups");
+
+        this.fillTabPlaceholders(cloudSystem.getPlaceholders());
+        this.fillLoginPlaceholders(cloudSystem.getPlaceholders());
 
         if (wrapper != null && proxyGroups != null) {
             this.readWrapper(cloudSystem, wrapper);

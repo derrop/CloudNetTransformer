@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloudnet2.mobs;
 
 import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCGroupConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCItem;
@@ -14,10 +15,7 @@ import com.github.derrop.documents.Documents;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @DescribedCloudExecutor(name = "MobLayout")
@@ -39,21 +37,24 @@ public class CloudNet2MobLayout implements CloudReaderWriter {
         config
                 .append("inventorySize", configuration.getInventorySize())
                 .append("startPoint", configuration.getStartSlot())
-                .append("itemLayout", this.asJson(configuration.getOnlineItem()))
-                .append("defaultItemInventory", configuration.getInventoryLayout().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> this.asJson(entry.getValue()))));
+                .append("itemLayout", this.asJson(cloudSystem, configuration.getOnlineItem()))
+                .append("defaultItemInventory", configuration.getInventoryLayout().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> this.asJson(cloudSystem, entry.getValue()))));
 
         Documents.newDocument().append("mobConfig", config).json().write(this.config(directory));
 
         return true;
     }
 
-    private Document asJson(NPCItem item) {
+    private Document asJson(CloudSystem cloudSystem, NPCItem item) {
+        Map<PlaceholderType, String> placeholders = new HashMap<>();
+        this.fillPlaceholders(placeholders);
+
         return Documents.newDocument()
                 .append("itemId", 0)
                 .append("itemName", item.getMaterial())
                 .append("subId", item.getSubId())
-                .append("display", item.getDisplayName())
-                .append("lore", item.getLore());
+                .append("display", cloudSystem.updatePlaceholders(item.getDisplayName(), placeholders))
+                .append("lore", Arrays.stream(item.getLore()).map(s -> cloudSystem.updatePlaceholders(s, placeholders)).toArray(String[]::new));
     }
 
     private NPCItem asItem(Document document) {
@@ -63,6 +64,22 @@ public class CloudNet2MobLayout implements CloudReaderWriter {
                 document.getString("display"),
                 document.get("lore", String[].class)
         );
+    }
+
+    private void fillPlaceholders(Map<PlaceholderType, String> map) {
+        map.put(PlaceholderType.NPCS_NAME, "%server%");
+        map.put(PlaceholderType.NPCS_TASK_ID, "%id%");
+        map.put(PlaceholderType.NPCS_HOST, "%host%");
+        map.put(PlaceholderType.NPCS_PORT, "%port%");
+        map.put(PlaceholderType.NPCS_MEMORY, "%memory%");
+        map.put(PlaceholderType.NPCS_ONLINE_PLAYERS, "%online_players%");
+        map.put(PlaceholderType.NPCS_MAX_PLAYERS, "%max_players%");
+        map.put(PlaceholderType.NPCS_MOTD, "%motd%");
+        map.put(PlaceholderType.NPCS_STATE, "%state%");
+        map.put(PlaceholderType.NPCS_NODE, "%wrapper%");
+        map.put(PlaceholderType.NPCS_EXTRA, "%extra%");
+        map.put(PlaceholderType.NPCS_TEMPLATE, "%template%");
+        map.put(PlaceholderType.NPCS_TASK, "%group%");
     }
 
     @Override
@@ -102,6 +119,8 @@ public class CloudNet2MobLayout implements CloudReaderWriter {
         }
 
         cloudSystem.setNpcConfiguration(new NPCConfiguration(configurations));
+
+        this.fillPlaceholders(cloudSystem.getPlaceholders());
 
         return true;
     }

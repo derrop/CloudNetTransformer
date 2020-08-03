@@ -1,9 +1,12 @@
 package com.github.derrop.cloudnettransformer.cloudnet3;
 
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderCategory;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceEnvironment;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceInclusion;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
@@ -79,6 +82,39 @@ public class CloudNet3Utils {
                     Files.copy(inputStream, targetDirectory.resolve(file), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
+        }
+    }
+
+    public static void fillServiceInfoPlaceholders(PlaceholderCategory category, Map<PlaceholderType, String> map) {
+        Preconditions.checkArgument(category == PlaceholderCategory.SIGNS || category == PlaceholderCategory.NPC_INVENTORY, "only signs and npcs are allowed for this method");
+
+        String[][] entries = new String[][]{
+                {"_TASK", "%task%"},
+                {"_TASK_ID", "%task_id%"},
+                {"_TARGET_GROUP", "%group%"},
+                {"_NAME", "%name%"},
+                {"_UUID", "%uuid%"},
+                {"_NODE", "%node%"},
+                {"_ENVIRONMENT", "%environment%"},
+                {"_LIFE_CYCLE", "%life_cycle%"},
+                {"_RUNTIME", "%runtime%"},
+                {"_PORT", "%port%"},
+                {"_CPU_USAGE", "%cpu_usage%"},
+                {"_THREADS", "%threads%"},
+                {"_ONLINE", "%online%"},
+                {"_ONLINE_PLAYERS", "%online_players%"},
+                {"_MAX_PLAYERS", "%max_players%"},
+                {"_MOTD", "%motd%"},
+                {"_EXTRA", "%extra%"},
+                {"_STATE", "%state%"},
+                {"_VERSION", "%version%"},
+                {"_WHITELIST", "%whitelist%"}
+        };
+
+        String prefix = category == PlaceholderCategory.SIGNS ? "SIGNS" : "NPCS";
+
+        for (String[] entry : entries) {
+            map.put(PlaceholderType.valueOf(prefix + entry[0]), entry[1]);
         }
     }
 
