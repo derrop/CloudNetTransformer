@@ -64,15 +64,12 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         document.append("configurations", configurations);
 
         Map<String, String> messages = new HashMap<>();
-        // TODO placeholders in the messages
         messages.put("server-connecting-message", cloudSystem.getMessage(MessageType.SIGN_SERVER_CONNECTING));
         messages.put("command-cloudsign-remove-success", cloudSystem.getMessage(MessageType.SIGN_REMOVE_SUCCESS));
         messages.put("command-cloudsign-create-success", cloudSystem.getMessage(MessageType.SIGN_CREATE_SUCCESS));
         messages.put("command-cloudsign-cleanup-success", cloudSystem.getMessage(MessageType.SIGN_CLEANUP_SUCCESS));
         messages.put("command-cloudsign-sign-already-exist", cloudSystem.getMessage(MessageType.SIGN_ALREADY_EXISTS));
         document.append("messages", messages);
-
-
 
         document.json().write(this.config(directory));;
 
