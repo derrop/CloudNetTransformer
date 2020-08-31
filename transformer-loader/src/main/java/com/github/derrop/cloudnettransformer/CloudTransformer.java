@@ -9,6 +9,7 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,7 +37,12 @@ public class CloudTransformer {
     }
 
     public String readLine() {
-        return this.reader.readLine(PROMPT);
+        try {
+            return this.reader.readLine(PROMPT);
+        } catch (UserInterruptException exception) {
+            System.exit(1);
+            return null;
+        }
     }
 
     public void transform(Path sourceDirectory, CloudType sourceType, CloudType targetType) throws IOException {
