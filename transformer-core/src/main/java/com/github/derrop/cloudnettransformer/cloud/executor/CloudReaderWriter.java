@@ -8,19 +8,19 @@ import java.nio.file.Path;
 
 public interface CloudReaderWriter extends CloudExecutor {
 
-    boolean write(CloudSystem cloudSystem, Path directory) throws IOException;
+    ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException;
 
-    boolean read(CloudSystem cloudSystem, Path directory) throws IOException;
+    ExecuteResult read(CloudSystem cloudSystem, Path directory) throws IOException;
 
     @Override
-    default boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
+    default ExecuteResult execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         switch (type) {
             case READ:
                 return this.read(cloudSystem, directory);
             case WRITE:
                 return this.write(cloudSystem, directory);
             default:
-                return false;
+                return ExecuteResult.failed("Unknown ExecutorType: " + type);
         }
     }
 }

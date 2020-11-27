@@ -5,6 +5,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageT
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.Fallback;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.fallback.FallbackConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.documents.Document;
@@ -14,7 +15,11 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @DescribedCloudExecutor(name = "Bridge")
 public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter {
@@ -28,9 +33,9 @@ public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
         if (!super.downloadFile(directory)) {
-            return false;
+            return ExecuteResult.failed("Failed to download file to " + directory);
         }
 
         Map<String, String> messages = new HashMap<>();
@@ -62,23 +67,23 @@ public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter
                 .append("logPlayerConnections", true)
                 .append("properties", Documents.newDocument());
 
-        Documents.newDocument("config", config).json().write(this.config(directory));;
+        Documents.newDocument("config", config).json().write(this.config(directory));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         cloudSystem.addExcludedServiceFiles("cloudnet-bridge.jar");
 
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("Config '" + configPath + "' not found");
         }
 
         Document document = Documents.jsonStorage().read(configPath).getDocument("config");
         if (document == null) {
-            return false;
+            return ExecuteResult.failed("No config entry found in the Bridge config from " + configPath);
         }
 
         for (Document fallbackConfiguration : document.getDocuments("bungeeFallbackConfigurations")) {
@@ -101,6 +106,6 @@ public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter
         cloudSystem.setMessage(MessageType.COMMAND_CLOUD_NO_PERMISSION, messages.getString("command-cloud-sub-command-no-permission"));
         cloudSystem.setMessage(MessageType.NETWORK_ALREADY_CONNECTED, messages.getString("already-connected"));
 
-        return true;
+        return ExecuteResult.success();
     }
 }

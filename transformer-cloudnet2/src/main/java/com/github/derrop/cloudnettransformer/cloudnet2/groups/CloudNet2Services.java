@@ -18,6 +18,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceT
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTemplate;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.TemplateInstallerType;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloudnet2.CloudNet2Utils;
@@ -42,15 +43,14 @@ public class CloudNet2Services implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
-
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         Document document = Documents.newDocument()
                 .append("wrapper", this.writeWrapper(cloudSystem))
                 .append("proxyGroups", this.writeProxyGroups(cloudSystem));
 
         document.json().write(this.config(directory));;
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private Collection<Document> writeWrapper(CloudSystem cloudSystem) {
@@ -234,11 +234,11 @@ public class CloudNet2Services implements CloudReaderWriter {
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
 
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("No services.json found as " + configPath);
         }
 
         Document document = Documents.jsonStorage().read(configPath);
@@ -252,10 +252,10 @@ public class CloudNet2Services implements CloudReaderWriter {
         if (wrapper != null && proxyGroups != null) {
             this.readWrapper(cloudSystem, wrapper);
             this.readProxyGroups(cloudSystem, proxyGroups);
-            return true;
+            return ExecuteResult.success();
         }
 
-        return false;
+        return ExecuteResult.failed("No wrapper/proxyGroups arrays set in the services.json");
     }
 
     private void readWrapper(CloudSystem cloudSystem, Collection<Document> wrapper) {

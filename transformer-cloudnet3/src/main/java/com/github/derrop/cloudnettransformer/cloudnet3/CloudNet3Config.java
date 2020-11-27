@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer.cloudnet3;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudConfig;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
@@ -24,10 +25,10 @@ public class CloudNet3Config implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         CloudConfig config = cloudSystem.getConfig();
         if (config == null) {
-            return false;
+            return ExecuteResult.failed("No Config set in the CloudSystem");
         }
 
         Document document = Documents.newDocument();
@@ -64,27 +65,27 @@ public class CloudNet3Config implements CloudReaderWriter {
 
         document.append("defaultJVMOptionParameters", true);
 
-        document.json().write(this.config(directory));;
+        document.json().write(this.config(directory));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Path path = this.config(directory);
         if (Files.notExists(path)) {
-            return false;
+            return ExecuteResult.failed("Config of the Node not found in " + path);
         }
 
         Document document = Documents.jsonStorage().read(path);
         Document identity = document.getDocument("identity");
         if (identity == null) {
-            return false;
+            return ExecuteResult.failed("No identity entry in the node config found in " + path);
         }
         Collection<Document> listeners = identity.getDocuments("listeners");
         Document listener = listeners.isEmpty() ? null : listeners.iterator().next();
         if (listener == null) {
-            return false;
+            return ExecuteResult.failed("No listener in the node config found in " + path);
         }
 
 
@@ -98,6 +99,6 @@ public class CloudNet3Config implements CloudReaderWriter {
                 document.getInt("maxMemory")
         ));
 
-        return true;
+        return ExecuteResult.success();
     }
 }

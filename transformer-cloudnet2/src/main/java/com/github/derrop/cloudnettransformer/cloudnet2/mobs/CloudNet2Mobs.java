@@ -7,6 +7,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.NPCA
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.PlacedNPC;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.ProfileProperty;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
@@ -26,7 +27,7 @@ public class CloudNet2Mobs implements CloudReaderWriter {
     private static final String DOCUMENT_NAME = "server_selector_mobs";
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         Map<PlaceholderType, String> placeholders = new HashMap<>();
         this.fillInfoLinePlaceholders(placeholders);
@@ -55,7 +56,7 @@ public class CloudNet2Mobs implements CloudReaderWriter {
 
         database.insert(DOCUMENT_NAME, Documents.newDocument("mobs", mobs));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private void fillInfoLinePlaceholders(Map<PlaceholderType, String> map) {
@@ -65,15 +66,15 @@ public class CloudNet2Mobs implements CloudReaderWriter {
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         Document document = database.get(DOCUMENT_NAME);
         if (document == null) {
-            return false;
+            return ExecuteResult.failed("No " + DOCUMENT_NAME + " in " + DATABASE_NAME + " found");
         }
         Document mobs = document.getDocument("mobs");
         if (mobs == null) {
-            return false;
+            return ExecuteResult.failed("No mobs entry in " + DATABASE_NAME + ":" + DOCUMENT_NAME + " found");
         }
 
         mobs.keys().stream().map(mobs::getDocument).forEach(mob -> {
@@ -108,6 +109,6 @@ public class CloudNet2Mobs implements CloudReaderWriter {
 
         this.fillInfoLinePlaceholders(cloudSystem.getPlaceholders());
 
-        return true;
+        return ExecuteResult.success();
     }
 }

@@ -8,6 +8,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceG
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTemplate;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloudnet3.CloudNet3Utils;
@@ -33,7 +34,7 @@ public class CloudNet3Groups implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
 
         Collection<ServiceGroup> groups = new ArrayList<>(cloudSystem.getGroups());
 
@@ -80,20 +81,20 @@ public class CloudNet3Groups implements CloudReaderWriter {
 
         Documents.newDocument("groups", documents).json().write(this.groupsPath(directory));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) throws IOException {
 
         Path path = this.groupsPath(directory);
         if (Files.notExists(path)) {
-            return true;
+            return ExecuteResult.success();
         }
 
         Collection<Document> groups = Documents.jsonStorage().read(path).getDocuments("groups");
         if (groups == null) {
-            return false;
+            return ExecuteResult.failed("Groups config doesn't contain a groups entry in "+path);
         }
 
         for (Document group : groups) {
@@ -127,6 +128,6 @@ public class CloudNet3Groups implements CloudReaderWriter {
             }
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 }

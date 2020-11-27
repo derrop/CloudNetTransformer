@@ -6,6 +6,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.Perm
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionGroup;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.documents.Document;
@@ -30,11 +31,10 @@ public class CloudNet2PermissionGroups implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
-
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         PermissionConfiguration permissionConfiguration = cloudSystem.getPermissionConfiguration();
         if (permissionConfiguration == null) {
-            return false;
+            return ExecuteResult.failed("No PermissionConfiguration in the CLoudSystem set");
         }
 
 
@@ -48,9 +48,9 @@ public class CloudNet2PermissionGroups implements CloudReaderWriter {
                 .append("enabled", permissionConfiguration.isEnabled())
                 .append("groups", groups);
 
-        document.yaml().write(this.config(directory));;
+        document.yaml().write(this.config(directory));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private Document writeGroup(PermissionGroup group) {
@@ -91,10 +91,10 @@ public class CloudNet2PermissionGroups implements CloudReaderWriter {
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("Config '" + configPath + "' not found");
         }
 
         Document document = Documents.yamlStorage().read(configPath);
@@ -132,7 +132,7 @@ public class CloudNet2PermissionGroups implements CloudReaderWriter {
 
         cloudSystem.setPermissionConfiguration(new PermissionConfiguration(enabled, outGroups));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private void parsePermissions(Collection<Permission> permissions, BiFunction<String, Integer, Permission> permissionCreator, JsonArray array) {

@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloudnet2.CloudNet2Utils;
 import com.github.derrop.documents.Document;
@@ -27,7 +28,7 @@ public class CloudNet2Groups implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
 
         Path groupsDirectory = this.groupsDirectory(directory);
         Files.createDirectories(groupsDirectory);
@@ -76,17 +77,15 @@ public class CloudNet2Groups implements CloudReaderWriter {
             Documents.newDocument("group", group).json().write(groupsDirectory.resolve(task.getName() + ".json"));;
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
-
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) throws IOException {
         Path groupsDirectory = this.groupsDirectory(directory);
         if (Files.notExists(groupsDirectory)) {
-            return true;
+            return ExecuteResult.success();
         }
-
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(groupsDirectory)) {
             for (Path path : stream) {
@@ -143,6 +142,6 @@ public class CloudNet2Groups implements CloudReaderWriter {
         }
 
 
-        return true;
+        return ExecuteResult.success();
     }
 }

@@ -12,6 +12,6 @@ public interface CloudExecutor {
         return null;
     }
 
-    boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException;
+    ExecuteResult execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException;
 
 }

@@ -7,6 +7,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceE
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTask;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceTemplate;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.util.FileUtils;
@@ -35,7 +36,7 @@ public class CloudNet2GlobalTemplates extends CloudNetTemplates {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
         for (TemplateDirectory template : cloudSystem.getGlobalTemplates(ServiceEnvironment.MINECRAFT_SERVER)) {
             template.copyTo(this.globalDirectory(directory));
 
@@ -72,11 +73,11 @@ public class CloudNet2GlobalTemplates extends CloudNetTemplates {
             }
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) throws IOException {
         cloudSystem.addGlobalTemplate(ServiceEnvironment.MINECRAFT_SERVER, new TemplateDirectory(
                 "Global", "server",
                 this.globalDirectory(directory)
@@ -93,6 +94,6 @@ public class CloudNet2GlobalTemplates extends CloudNetTemplates {
             }
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 }

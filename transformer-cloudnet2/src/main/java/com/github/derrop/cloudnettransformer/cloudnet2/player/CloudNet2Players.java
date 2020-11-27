@@ -6,9 +6,9 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Databas
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUserProvider;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.player.PlayerProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 @DescribedCloudExecutor(name = "Players/Permissions")
@@ -21,35 +21,35 @@ public class CloudNet2Players implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
 
-        boolean success = false;
+        ExecuteResult result = ExecuteResult.failed("No PlayerProvider/PermissionUserProvider set in the CloudSystem");
 
         if (cloudSystem.getPlayerProvider() != null) {
             PlayerProvider playerProvider = new CloudNet2PlayerProvider(database);
             cloudSystem.getPlayerProvider().loadPlayers(playerProvider::insertPlayer);
             cloudSystem.setPlayerProvider(playerProvider);
-            success = true;
+            result = ExecuteResult.success();
         }
         if (cloudSystem.getPermissionUserProvider() != null) {
             PermissionUserProvider permissionUserProvider = new CloudNet2PermissionUserProvider(cloudSystem.getPlayerProvider(), database, this.usersFile(directory));
             cloudSystem.getPermissionUserProvider().loadUsers(permissionUserProvider::insertUser);
             cloudSystem.setPermissionUserProvider(permissionUserProvider);
-            success = true;
+            result = ExecuteResult.success();
         }
 
-        return success;
+        return result;
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
 
         cloudSystem.setPlayerProvider(new CloudNet2PlayerProvider(database));
         cloudSystem.setPermissionUserProvider(new CloudNet2PermissionUserProvider(cloudSystem.getPlayerProvider(), database, this.usersFile(directory)));
 
-        return true;
+        return ExecuteResult.success();
     }
 
 }

@@ -6,6 +6,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.message.Placehol
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.cloudnettransformer.cloudnet3.CloudNet3Utils;
@@ -35,12 +36,12 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
         if (cloudSystem.getSignConfiguration() == null) {
-            return false;
+            return ExecuteResult.failed("SignConfiguration in the CloudSystem not set");
         }
         if (!super.downloadFile(directory)) {
-            return false;
+            return ExecuteResult.failed("Failed to download file to " + directory);
         }
 
         SignConfiguration signConfiguration = cloudSystem.getSignConfiguration();
@@ -73,21 +74,21 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
 
         document.json().write(this.config(directory));;
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         cloudSystem.addExcludedServiceFiles("cloudnet-signs.jar");
 
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("Config '" + configPath + "' not found");
         }
 
         Document config = Documents.jsonStorage().read(configPath).getDocument("config");
-        if (!config.contains("configurations")) {
-            return false;
+        if (config == null) {
+            return ExecuteResult.failed("Failed to read json from " + configPath);
         }
 
         Collection<GroupSignConfiguration> configurations = new ArrayList<>();
@@ -136,6 +137,6 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
 
         CloudNet3Utils.fillServiceInfoPlaceholders(PlaceholderCategory.SIGNS, cloudSystem.getPlaceholders());
 
-        return true;
+        return ExecuteResult.success();
     }
 }

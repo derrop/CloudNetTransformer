@@ -8,6 +8,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdC
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.motd.MotdLayout;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.proxy.tablist.TabListConfiguration;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
@@ -18,7 +19,11 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @DescribedCloudExecutor(name = "SyncProxy", priority = ExecutorPriority.LAST)
@@ -33,9 +38,9 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
         if (!super.downloadFile(directory)) {
-            return false;
+            return ExecuteResult.failed("Failed to download file to " + directory);
         }
 
         Document document = Documents.newDocument()
@@ -84,7 +89,7 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
 
         Documents.newDocument().append("config", document).json().write(this.config(directory));;
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private String updateTabPlaceholders(CloudSystem cloudSystem, String input) {
@@ -136,16 +141,16 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         cloudSystem.addExcludedServiceFiles("cloudnet-syncproxy.jar");
 
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("Config '" + configPath + "' not found");
         }
         Document document = Documents.jsonStorage().read(configPath).getDocument("config");
         if (document == null) {
-            return false;
+            return ExecuteResult.failed("Failed to read json from " + configPath);
         }
 
         for (Document login : document.getDocuments("loginConfigurations")) {
@@ -175,7 +180,7 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
         this.fillTabPlaceholders(cloudSystem.getPlaceholders());
         this.fillLoginPlaceholders(cloudSystem.getPlaceholders());
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private MotdLayout asMotdLayout(Document document) {

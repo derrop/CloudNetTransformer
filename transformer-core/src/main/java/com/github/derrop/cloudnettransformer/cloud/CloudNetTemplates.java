@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer.cloud;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.TemplateDirectory;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 
@@ -18,9 +19,9 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
     protected abstract Path templatesDirectory(Path directory);
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
         this.writeTemplates(this.templatesDirectory(directory), cloudSystem.getTemplates());
-        return true;
+        return ExecuteResult.success();
     }
 
     protected TemplateDirectory createTemplateDirectory(String group, String name, Path directory) {
@@ -36,10 +37,10 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) throws IOException {
         Path templates = this.templatesDirectory(directory);
         if (Files.notExists(templates)) {
-            return true;
+            return ExecuteResult.success();
         }
 
         try (DirectoryStream<Path> prefixStream = Files.newDirectoryStream(templates)) {
@@ -51,7 +52,7 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
             }
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 
     protected void resolvePrefixDirectory(CloudSystem cloudSystem, Path prefixDirectory) throws IOException {
@@ -65,7 +66,7 @@ public abstract class CloudNetTemplates implements CloudReaderWriter {
         }
     }
 
-    protected void resolveNameDirectory(CloudSystem cloudSystem, Path prefixDirectory, Path nameDirectory) throws IOException {
+    protected void resolveNameDirectory(CloudSystem cloudSystem, Path prefixDirectory, Path nameDirectory) {
         String group = prefixDirectory.getFileName().toString();
         String name = nameDirectory.getFileName().toString();
 

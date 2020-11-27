@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloud.executor.defaults;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -49,7 +50,7 @@ public class MultiCloudExecutor implements CloudExecutor {
     }
 
     @Override
-    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         this.executors.sort(Comparator.comparingInt(value -> value.getDescription().priority()));
 
         for (ExecutorContainer reader : this.executors) {
@@ -58,15 +59,16 @@ public class MultiCloudExecutor implements CloudExecutor {
             }
 
             System.out.println("Executing '" + reader.getName() + "' as " + type + "...");
-            if (!reader.getExecutor().execute(type, cloudSystem, directory)) {
-                System.err.println(Ansi.ansi().fgBrightRed().a("Failed to execute '" + reader.getName() + "'").reset());
+            ExecuteResult result = reader.getExecutor().execute(type, cloudSystem, directory);
+            if (!result.isSuccess()) {
+                System.err.println(Ansi.ansi().fgBrightRed().a("Failed to execute '" + reader.getName() + "': " + result.getMessage()).reset());
                 if (reader.getDescription().optional()) {
                     continue;
                 }
-                return false;
+                return result;
             }
             System.out.println(Ansi.ansi().fgBrightGreen().a("Successfully executed '" + reader.getName() + "'").reset());
         }
-        return true;
+        return ExecuteResult.success();
     }
 }

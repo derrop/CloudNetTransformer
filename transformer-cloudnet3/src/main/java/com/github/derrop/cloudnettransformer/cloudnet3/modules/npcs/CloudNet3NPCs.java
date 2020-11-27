@@ -7,12 +7,12 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.NPCA
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.PlacedNPC;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.placed.ProfileProperty;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class CloudNet3NPCs implements CloudReaderWriter {
     private static final String DOCUMENT_NAME = "npc_store";
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         Map<PlaceholderType, String> placeholders = new HashMap<>();
         this.fillInfoLinePlaceholders(placeholders);
@@ -57,7 +57,7 @@ public class CloudNet3NPCs implements CloudReaderWriter {
                 .collect(Collectors.toList()))
         );
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private void fillInfoLinePlaceholders(Map<PlaceholderType, String> map) {
@@ -68,11 +68,11 @@ public class CloudNet3NPCs implements CloudReaderWriter {
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         Document document = database.get(DOCUMENT_NAME);
         if (document == null) {
-            return true;
+            return ExecuteResult.success();
         }
 
         for (Document npc : document.getDocuments("npcs")) {
@@ -103,6 +103,6 @@ public class CloudNet3NPCs implements CloudReaderWriter {
 
         this.fillInfoLinePlaceholders(cloudSystem.getPlaceholders());
 
-        return true;
+        return ExecuteResult.success();
     }
 }

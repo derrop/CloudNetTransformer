@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.PlacedSign;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
@@ -19,8 +20,7 @@ public class CloudNet2Signs implements CloudReaderWriter {
     private static final String DOCUMENT_NAME = "signs";
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
-
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
 
         Document signs = Documents.newDocument();
@@ -43,21 +43,20 @@ public class CloudNet2Signs implements CloudReaderWriter {
 
         database.insert(DOCUMENT_NAME, Documents.newDocument().append("signs", signs));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
-
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         Document document = database.get(DOCUMENT_NAME);
         if (document == null) {
-            return true;
+            return ExecuteResult.success();
         }
 
         Document signs = document.getDocument("signs");
         if (signs == null) {
-            return false;
+            return ExecuteResult.failed("Signs array not found in the database " + DATABASE_NAME + ":" + DOCUMENT_NAME);
         }
 
         int timeId = 0;
@@ -83,6 +82,6 @@ public class CloudNet2Signs implements CloudReaderWriter {
             ));
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 }

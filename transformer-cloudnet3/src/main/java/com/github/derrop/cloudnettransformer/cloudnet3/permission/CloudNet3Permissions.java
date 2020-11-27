@@ -7,6 +7,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.grou
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.group.PermissionGroup;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.permissions.user.PermissionUserProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.FileDownloader;
 import com.github.derrop.documents.Document;
@@ -41,12 +42,12 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
         if (cloudSystem.getPermissionConfiguration() == null) {
-            return false;
+            return ExecuteResult.failed("PermissionConfiguration in the CloudSystem not set");
         }
         if (!super.downloadFile(directory)) {
-            return false;
+            return ExecuteResult.failed("Failed to download file to " + directory);
         }
 
         PermissionConfiguration permissionConfiguration = cloudSystem.getPermissionConfiguration();
@@ -99,14 +100,14 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
             cloudSystem.setPermissionUserProvider(permissionUserProvider);
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("Config '" + configPath + "' not found");
         }
 
 
@@ -139,7 +140,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         cloudSystem.setPermissionUserProvider(new CloudNet3PermissionUserProvider(this, database));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     protected Collection<Permission> getAllPermissions(Document document) {

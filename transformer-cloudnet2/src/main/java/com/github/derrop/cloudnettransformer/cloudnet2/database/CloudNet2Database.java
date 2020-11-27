@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
@@ -16,7 +17,7 @@ import java.nio.file.Path;
 public class CloudNet2Database implements CloudExecutor {
 
     @Override
-    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         Path databaseDirectory = directory.resolve(Constants.MASTER_DIRECTORY).resolve("database");
         boolean nitrite;
         if (Files.notExists(databaseDirectory) || !Files.isDirectory(databaseDirectory)) {
@@ -29,12 +30,12 @@ public class CloudNet2Database implements CloudExecutor {
 
         DatabaseProvider databaseProvider = nitrite ? new CloudNet2NitriteDatabaseProvider(databaseDirectory.resolve("cloudnet.db")) : new CloudNet2FileDatabaseProvider(databaseDirectory);
         if (!databaseProvider.init()) {
-            return false;
+            return ExecuteResult.failed("Failed to init database provider " + databaseProvider.getClass().getSimpleName());
         }
 
         cloudSystem.setDatabaseProvider(databaseProvider);
 
-        return true;
+        return ExecuteResult.success();
     }
 
 }

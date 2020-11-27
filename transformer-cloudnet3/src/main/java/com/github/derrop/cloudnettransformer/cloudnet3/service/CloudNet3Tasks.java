@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.UserNote;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.*;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloudnet3.CloudNet3Utils;
@@ -27,7 +28,7 @@ public class CloudNet3Tasks implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
 
         Path tasksDirectory = this.tasksDirectory(directory);
         Files.createDirectories(tasksDirectory);
@@ -81,15 +82,15 @@ public class CloudNet3Tasks implements CloudReaderWriter {
 
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) throws IOException {
 
         Path tasksDirectory = this.tasksDirectory(directory);
         if (Files.notExists(tasksDirectory)) {
-            return true;
+            return ExecuteResult.success();
         }
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(tasksDirectory)) {
@@ -142,6 +143,6 @@ public class CloudNet3Tasks implements CloudReaderWriter {
             }
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 }

@@ -3,6 +3,7 @@ package com.github.derrop.cloudnettransformer.cloudnet3.database;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.DatabaseProvider;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
@@ -26,7 +27,7 @@ public class CloudNet3Database implements CloudExecutor {
     }
 
     @Override
-    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         Path registryFile = directory.resolve("local").resolve("registry");
 
         String providerName = "h2";
@@ -34,38 +35,37 @@ public class CloudNet3Database implements CloudExecutor {
         if (Files.exists(registryFile)) {
             Document registry = Documents.jsonStorage().read(registryFile);
             if (!registry.contains("entries")) {
-                return false;
+                return ExecuteResult.failed("No entries set in the registryFile at " + registryFile);
             }
             Document registryEntries = registry.getDocument("entries");
             if (registryEntries == null || !registryEntries.contains("database_provider")) {
-                return false;
+                return ExecuteResult.failed("No database provider set in the registryFile at " + registryFile);
             }
 
             providerName = registryEntries.getString("database_provider");
         }
 
         if (providerName == null) {
-            return false;
+            return ExecuteResult.failed("Null as the database provider set in the registryFile at " + registryFile);
         }
 
         Class<? extends DatabaseProvider> providerClass = AVAILABLE_PROVIDERS.get(providerName);
         if (providerClass == null) {
-            System.err.println("Unknown DatabaseProvider '" + providerName + "'");
-            return false;
+            return ExecuteResult.failed("Unknown DatabaseProvider '" + providerName + "'");
         }
 
         try {
             DatabaseProvider databaseProvider = providerClass.getDeclaredConstructor(Path.class).newInstance(directory);
             if (!databaseProvider.init()) {
-                return false;
+                return ExecuteResult.failed("Failed to init database provider " + databaseProvider.getClass().getSimpleName());
             }
 
             cloudSystem.setDatabaseProvider(databaseProvider);
 
-            return true;
+            return ExecuteResult.success();
         } catch (ReflectiveOperationException exception) {
             exception.printStackTrace();
-            return false;
+            return ExecuteResult.failed(exception.getClass().getName() + ": " + exception.getMessage());
         }
     }
 }

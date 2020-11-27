@@ -8,14 +8,18 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCGroupCon
 import com.github.derrop.cloudnettransformer.cloud.deserialized.npcs.NPCItem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @DescribedCloudExecutor(name = "MobLayout")
@@ -26,9 +30,9 @@ public class CloudNet2MobLayout implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         if (cloudSystem.getNpcConfiguration() == null || cloudSystem.getNpcConfiguration().getConfigurations().isEmpty()) {
-            return false;
+            return ExecuteResult.failed("No NpcConfiguration (or one without any Entries) set in the CloudSystem");
         }
 
         NPCGroupConfiguration configuration = cloudSystem.getNpcConfiguration().getConfigurations().iterator().next();
@@ -42,7 +46,7 @@ public class CloudNet2MobLayout implements CloudReaderWriter {
 
         Documents.newDocument().append("mobConfig", config).json().write(this.config(directory));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private Document asJson(CloudSystem cloudSystem, NPCItem item) {
@@ -83,15 +87,15 @@ public class CloudNet2MobLayout implements CloudReaderWriter {
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("Config " + configPath + " not found");
         }
 
         Document config = Documents.jsonStorage().read(configPath).getDocument("mobConfig");
         if (config == null) {
-            return false;
+            return ExecuteResult.failed("No mobConfig entry in the MobLayout config found in " + configPath);
         }
 
         Collection<NPCGroupConfiguration> configurations = new ArrayList<>();
@@ -122,6 +126,6 @@ public class CloudNet2MobLayout implements CloudReaderWriter {
 
         this.fillPlaceholders(cloudSystem.getPlaceholders());
 
-        return true;
+        return ExecuteResult.success();
     }
 }

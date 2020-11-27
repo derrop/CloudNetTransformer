@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloud.executor.defaults;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 import com.github.derrop.cloudnettransformer.util.HttpHelper;
@@ -44,7 +45,10 @@ public class FileDownloaderExecutor implements CloudExecutor {
     }
 
     @Override
-    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
-        return type != ExecutorType.WRITE || this.downloadFile(directory);
+    public ExecuteResult execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
+        if (type != ExecutorType.WRITE) {
+            return ExecuteResult.success();
+        }
+        return ExecuteResult.of(this.downloadFile(directory));
     }
 }

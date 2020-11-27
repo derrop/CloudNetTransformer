@@ -4,11 +4,11 @@ import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudConfig;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -27,10 +27,10 @@ public class CloudNet2Config implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         CloudConfig config = cloudSystem.getConfig();
         if (config == null) {
-            return false;
+            return ExecuteResult.failed("No Config in the CloudSystem set");
         }
 
         Document master = Documents.newDocument();
@@ -75,18 +75,20 @@ public class CloudNet2Config implements CloudReaderWriter {
                 .append("percentOfCPUForANewProxy", config.getMaxCPUUsageToStartServices())
         );
 
-        master.yaml().write(this.masterConfig(directory));;
-        wrapper.yaml().write(this.wrapperConfig(directory));;
+        master.yaml().write(this.masterConfig(directory));
+        ;
+        wrapper.yaml().write(this.wrapperConfig(directory));
+        ;
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Path masterConfigPath = this.masterConfig(directory);
         Path wrapperConfigPath = this.wrapperConfig(directory);
         if (Files.notExists(masterConfigPath) || Files.notExists(wrapperConfigPath)) {
-            return false;
+            return ExecuteResult.failed("No Master/Wrapper configs found in " + masterConfigPath + " and " + wrapperConfigPath);
         }
 
         Document master = Documents.yamlStorage().read(masterConfigPath);
@@ -96,7 +98,7 @@ public class CloudNet2Config implements CloudReaderWriter {
         Document masterServer = master.getDocument("server");
         Document wrapperGeneral = wrapper.getDocument("general");
         if (masterGeneral == null || masterServer == null || wrapperGeneral == null) {
-            return false;
+            return ExecuteResult.failed("No general or server entry in the Master config or no general entry in the Wrapper config found");
         }
 
         cloudSystem.setConfig(new CloudConfig(
@@ -109,6 +111,6 @@ public class CloudNet2Config implements CloudReaderWriter {
                 wrapperGeneral.getInt("max-memory")
         ));
 
-        return true;
+        return ExecuteResult.success();
     }
 }

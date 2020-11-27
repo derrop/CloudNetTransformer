@@ -2,6 +2,7 @@ package com.github.derrop.cloudnettransformer.cloud.executor.defaults;
 
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorType;
 import com.github.derrop.cloudnettransformer.util.HttpHelper;
@@ -50,12 +51,14 @@ public class StartFileWriter implements CloudExecutor {
     }
 
     @Override
-    public boolean execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult execute(ExecutorType type, CloudSystem cloudSystem, Path directory) throws IOException {
         if (getFileSuffix() == null) {
             System.out.println("Not writing start file because the OperatingSystem '" + System.getProperty("os.name") + "' could not be detected");
-            return true;
+            return ExecuteResult.success();
         }
 
-        return HttpHelper.download(this.url + getFileSuffix(), directory.resolve(this.path + getFileSuffix()));
+        return HttpHelper.download(this.url + getFileSuffix(), directory.resolve(this.path + getFileSuffix()))
+                ? ExecuteResult.success()
+                : ExecuteResult.failed("Failed to download file from " + this.url + getFileSuffix());
     }
 }

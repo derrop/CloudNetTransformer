@@ -4,11 +4,11 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.database.Database;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.PlacedSign;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.Document;
 import com.github.derrop.documents.Documents;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,8 +20,7 @@ public class CloudNet3Signs implements CloudReaderWriter {
     private static final String DOCUMENT_NAME = "signs_store";
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
-
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         Collection<Document> signs = new ArrayList<>();
 
@@ -43,22 +42,21 @@ public class CloudNet3Signs implements CloudReaderWriter {
 
         database.insert(DOCUMENT_NAME, Documents.newDocument("signs", signs));
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
-
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
         Database database = cloudSystem.getDatabaseProvider().getDatabase(DATABASE_NAME);
         Document document = database.get(DOCUMENT_NAME);
 
         if (document == null) {
-            return true;
+            return ExecuteResult.success();
         }
 
         Collection<Document> signs = document.getDocuments("signs");
         if (signs == null) {
-            return false;
+            return ExecuteResult.failed("Signs array not found in the database " + DATABASE_NAME + ":" + DOCUMENT_NAME);
         }
 
         for (Document sign : signs) {
@@ -78,6 +76,6 @@ public class CloudNet3Signs implements CloudReaderWriter {
             ));
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 }

@@ -5,8 +5,13 @@ import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.MessageType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.message.PlaceholderType;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.ServiceGroup;
-import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.*;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.AnimatedSignLayout;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.GroupSignConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.SignConfiguration;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.SignLayout;
+import com.github.derrop.cloudnettransformer.cloud.deserialized.signs.TaskSignLayout;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.documents.DefaultDocument;
 import com.github.derrop.documents.Document;
@@ -15,7 +20,11 @@ import com.google.gson.JsonElement;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -27,11 +36,10 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) {
-
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) {
         SignConfiguration signConfiguration = cloudSystem.getSignConfiguration();
         if (signConfiguration == null || signConfiguration.getConfigurations().isEmpty()) {
-            return false;
+            return ExecuteResult.failed("No SignConfiguration (or one without any Entries) set in the CloudSystem");
         }
 
         Document config = Documents.newDocument();
@@ -64,9 +72,10 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
                         .append("searchingLayouts", searchLayoutJson)
         );
 
-        Documents.newDocument("layout_config", config).json().write(this.config(directory));;
+        Documents.newDocument("layout_config", config).json().write(this.config(directory));
+        ;
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private Document asJson(CloudSystem cloudSystem, String name, TaskSignLayout layout) {
@@ -118,16 +127,16 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) {
 
         Path configPath = this.config(directory);
         if (Files.notExists(configPath)) {
-            return false;
+            return ExecuteResult.failed("Config '" + configPath + "' not found");
         }
 
         Document config = Documents.jsonStorage().read(configPath).getDocument("layout_config");
         if (config == null) {
-            return false;
+            return ExecuteResult.failed("No layout_config entry found in the SignLayout in " + configPath);
         }
 
         boolean switchToSearchingWhenFull = config.getBoolean("fullServerHide");
@@ -200,7 +209,7 @@ public class CloudNet2SignLayout implements CloudReaderWriter {
 
         this.fillPlaceholders(cloudSystem.getPlaceholders());
 
-        return true;
+        return ExecuteResult.success();
     }
 
     private SignLayout asSignLayout(DefaultDocument document) {

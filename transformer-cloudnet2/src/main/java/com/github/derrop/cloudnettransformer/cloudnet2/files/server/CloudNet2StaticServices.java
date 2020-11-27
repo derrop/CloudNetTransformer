@@ -4,6 +4,7 @@ import com.github.derrop.cloudnettransformer.Constants;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.cloud.deserialized.service.directory.StaticServiceDirectory;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudReaderWriter;
+import com.github.derrop.cloudnettransformer.cloud.executor.ExecuteResult;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.DescribedCloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorPriority;
 
@@ -20,9 +21,9 @@ public class CloudNet2StaticServices implements CloudReaderWriter {
     }
 
     @Override
-    public boolean write(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
         if (cloudSystem.getStaticServices().isEmpty()) {
-            return true;
+            return ExecuteResult.success();
         }
 
         Path baseDirectory = this.serversDirectory(directory);
@@ -33,15 +34,15 @@ public class CloudNet2StaticServices implements CloudReaderWriter {
             staticService.copyTo(serverDirectory);
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 
     @Override
-    public boolean read(CloudSystem cloudSystem, Path directory) throws IOException {
+    public ExecuteResult read(CloudSystem cloudSystem, Path directory) throws IOException {
         Path baseDirectory = this.serversDirectory(directory);
 
         if (Files.notExists(baseDirectory)) {
-            return true;
+            return ExecuteResult.success();
         }
 
         try (DirectoryStream<Path> groupStream = Files.newDirectoryStream(baseDirectory)) {
@@ -73,6 +74,6 @@ public class CloudNet2StaticServices implements CloudReaderWriter {
             }
         }
 
-        return true;
+        return ExecuteResult.success();
     }
 }
