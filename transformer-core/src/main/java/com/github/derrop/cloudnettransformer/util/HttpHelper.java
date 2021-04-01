@@ -22,6 +22,7 @@ public class HttpHelper {
 
     public static boolean download(String url, OutputStream outputStream) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");
         connection.connect();
 
         if (connection.getResponseCode() != 200) {

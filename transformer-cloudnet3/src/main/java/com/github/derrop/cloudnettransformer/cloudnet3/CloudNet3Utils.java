@@ -51,6 +51,10 @@ public class CloudNet3Utils {
     }
 
     public static Path resolveApplicationPath(ServiceEnvironment environment, Path directory) throws IOException {
+        if (Files.notExists(directory)) {
+            return null;
+        }
+
         String[] contents = APPLICATION_FILE_CONTENTS.get(environment);
         if (contents == null) {
             return null;
