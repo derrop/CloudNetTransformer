@@ -1,8 +1,10 @@
 package com.github.derrop.cloudnettransformer.cloud;
 
 import com.github.derrop.cloudnettransformer.Constants;
+import com.github.derrop.cloudnettransformer.VariableLoader;
 import com.github.derrop.cloudnettransformer.cloud.executor.CloudExecutor;
 import com.github.derrop.cloudnettransformer.cloud.executor.defaults.ReflectiveCloudExecutor;
+import com.github.derrop.cloudnettransformer.cloud.variable.CloudNet3VariableLoader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,28 +19,31 @@ public enum CloudType {
     CLOUDNET_3(
             "CloudNet 3",
             null,
-            new ReflectiveCloudExecutor(prefixPackage("cloudnet3"))
-    ),
+            new ReflectiveCloudExecutor(prefixPackage("cloudnet3")),
+            new CloudNet3VariableLoader()),
     CLOUDNET_2(
             "CloudNet 2",
             "The directory has to contain '" + Constants.MASTER_DIRECTORY + "' and '" + Constants.WRAPPER_DIRECTORY + "' directories",
-            new ReflectiveCloudExecutor(prefixPackage("cloudnet2"))
-    );
+            new ReflectiveCloudExecutor(prefixPackage("cloudnet2")),
+            null);
 
     private final String name;
     private final String hint;
     private final CloudExecutor executor;
+    private final VariableLoader variableLoader;
+
     private Function<CloudType, String> descriptionProvider;
 
-    CloudType(String name, String hint, CloudExecutor executor) {
-        this(name, hint, executor, null);
+    CloudType(String name, String hint, CloudExecutor executor, VariableLoader variableLoader) {
+        this(name, hint, executor, variableLoader, null);
         this.descriptionProvider = descriptionProvider(this);
     }
 
-    CloudType(String name, String hint, CloudExecutor executor, Function<CloudType, String> descriptionProvider) {
+    CloudType(String name, String hint, CloudExecutor executor, VariableLoader variableLoader, Function<CloudType, String> descriptionProvider) {
         this.name = name;
         this.hint = hint;
         this.executor = executor;
+        this.variableLoader = variableLoader;
         this.descriptionProvider = descriptionProvider;
     }
 
@@ -52,6 +57,10 @@ public enum CloudType {
 
     public CloudExecutor getExecutor() {
         return this.executor;
+    }
+
+    public VariableLoader getVariableLoader() {
+        return this.variableLoader;
     }
 
     private static Function<CloudType, String> descriptionProvider(CloudType target) {

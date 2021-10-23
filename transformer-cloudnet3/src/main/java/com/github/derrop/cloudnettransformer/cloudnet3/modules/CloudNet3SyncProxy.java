@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3SyncProxy() {
-        super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-syncproxy/build/libs/cloudnet-syncproxy.jar", "modules/cloudnet-syncproxy.jar");
+        super("https://cloudnetservice.eu/cloudnet/updates/versions/${VERSION}/cloudnet-syncproxy.jar", "modules/cloudnet-syncproxy.jar");
     }
 
     private Path config(Path directory) {
@@ -39,7 +39,7 @@ public class CloudNet3SyncProxy extends FileDownloader implements CloudReaderWri
 
     @Override
     public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
-        if (!super.downloadFile(directory)) {
+        if (!super.downloadFile(cloudSystem, directory)) {
             return ExecuteResult.failed("Failed to download file to " + directory);
         }
 

@@ -56,6 +56,11 @@ public class CloudTransformer {
         System.out.println("Transforming " + sourceType.getName() + " (located at " + sourceDirectory.toAbsolutePath() + ") to " + targetType.getName() + " (located at " + targetDirectory.toAbsolutePath() + ")...");
 
         CloudSystem cloudSystem = new CloudSystem();
+
+        if (targetType.getVariableLoader() != null) {
+            targetType.getVariableLoader().loadVariables(cloudSystem.getVariables());
+        }
+
         sourceType.getExecutor().execute(ExecutorType.READ, cloudSystem, sourceDirectory);
         DatabaseProvider sourceDatabaseProvider = cloudSystem.getDatabaseProvider();
         targetType.getExecutor().execute(ExecutorType.WRITE, cloudSystem, targetDirectory);

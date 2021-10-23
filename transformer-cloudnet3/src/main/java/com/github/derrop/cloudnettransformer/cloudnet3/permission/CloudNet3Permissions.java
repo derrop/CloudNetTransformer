@@ -30,7 +30,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
     private static final String DATABASE_NAME = "cloudnet_permission_users";
 
     public CloudNet3Permissions() {
-        super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-cloudperms/build/libs/cloudnet-cloudperms.jar", "modules/cloudnet-cloudperms.jar");
+        super("https://cloudnetservice.eu/cloudnet/updates/versions/${VERSION}/cloudnet-cloudperms.jar", "modules/cloudnet-cloudperms.jar");
     }
 
     private Path config(Path directory) {
@@ -46,7 +46,7 @@ public class CloudNet3Permissions extends FileDownloader implements CloudReaderW
         if (cloudSystem.getPermissionConfiguration() == null) {
             return ExecuteResult.failed("PermissionConfiguration in the CloudSystem not set");
         }
-        if (!super.downloadFile(directory)) {
+        if (!super.downloadFile(cloudSystem, directory)) {
             return ExecuteResult.failed("Failed to download file to " + directory);
         }
 

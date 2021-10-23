@@ -26,7 +26,7 @@ import java.util.Map;
 @DescribedCloudExecutor(name = "NPC Layout")
 public class CloudNet3NPCLayout extends FileDownloader implements CloudReaderWriter {
     public CloudNet3NPCLayout() {
-        super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-npcs/build/libs/cloudnet-npcs.jar", "modules/cloudnet-npcs.jar");
+        super("https://cloudnetservice.eu/cloudnet/updates/versions/${VERSION}/cloudnet-npcs.jar", "modules/cloudnet-npcs.jar");
     }
 
     private Path config(Path directory) {
@@ -38,7 +38,7 @@ public class CloudNet3NPCLayout extends FileDownloader implements CloudReaderWri
         if (cloudSystem.getNpcConfiguration() == null) {
             return ExecuteResult.failed("NpcConfiguration in the CloudSystem not set");
         }
-        if (!super.downloadFile(directory)) {
+        if (!super.downloadFile(cloudSystem, directory)) {
             return ExecuteResult.failed("Failed to download file to " + directory);
         }
 

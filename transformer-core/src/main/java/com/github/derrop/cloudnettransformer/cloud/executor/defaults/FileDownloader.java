@@ -1,9 +1,11 @@
 package com.github.derrop.cloudnettransformer.cloud.executor.defaults;
 
+import com.github.derrop.cloudnettransformer.cloud.deserialized.CloudSystem;
 import com.github.derrop.cloudnettransformer.util.HttpHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 
 public class FileDownloader {
 
@@ -33,8 +35,13 @@ public class FileDownloader {
         return this.path;
     }
 
-    protected boolean downloadFile(Path directory) throws IOException {
-        return HttpHelper.download(this.url, directory.resolve(this.path));
+    protected boolean downloadFile(CloudSystem cloudSystem, Path directory) throws IOException {
+        String url = this.url;
+        for (Map.Entry<String, String> entry : cloudSystem.getVariables().entrySet()) {
+            url = url.replace(entry.getKey(), entry.getValue());
+        }
+
+        return HttpHelper.download(url, directory.resolve(this.path));
     }
 
 }

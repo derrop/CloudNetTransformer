@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3SignLayout() {
-        super("https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-signs/build/libs/cloudnet-signs.jar", "modules/cloudnet-signs.jar");
+        super("https://cloudnetservice.eu/cloudnet/updates/versions/${VERSION}/cloudnet-signs.jar", "modules/cloudnet-signs.jar");
     }
 
     private Path config(Path directory) {
@@ -40,7 +40,7 @@ public class CloudNet3SignLayout extends FileDownloader implements CloudReaderWr
         if (cloudSystem.getSignConfiguration() == null) {
             return ExecuteResult.failed("SignConfiguration in the CloudSystem not set");
         }
-        if (!super.downloadFile(directory)) {
+        if (!super.downloadFile(cloudSystem, directory)) {
             return ExecuteResult.failed("Failed to download file to " + directory);
         }
 

@@ -10,3 +10,5 @@ Now just answer the questions and it will automatically convert your selected in
 is running (e.g. `./CloudNet_2` for a transformation to CloudNet 2). It will also automatically download the required start file
 for your new installation, you just have to execute it (for CloudNet 2 there are two start files, CloudNet-Master and CloudNet-Wrapper,
 both need to be executed).
+
+Don't forget to replace the SimpleNameTags and Chat Plugins!

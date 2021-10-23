@@ -25,7 +25,7 @@ import java.util.Map;
 public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter {
 
     public CloudNet3Bridge() {
-        super("Bridge", "https://ci.cloudnetservice.eu/job/CloudNetService/job/CloudNet-v3/job/master/lastSuccessfulBuild/artifact/cloudnet-modules/cloudnet-bridge/build/libs/cloudnet-bridge.jar", "modules/cloudnet-bridge.jar");
+        super("Bridge", "https://cloudnetservice.eu/cloudnet/updates/versions/${VERSION}/cloudnet-bridge.jar", "modules/cloudnet-bridge.jar");
     }
 
     private Path config(Path directory) {
@@ -34,7 +34,7 @@ public class CloudNet3Bridge extends FileDownloader implements CloudReaderWriter
 
     @Override
     public ExecuteResult write(CloudSystem cloudSystem, Path directory) throws IOException {
-        if (!super.downloadFile(directory)) {
+        if (!super.downloadFile(cloudSystem, directory)) {
             return ExecuteResult.failed("Failed to download file to " + directory);
         }
 

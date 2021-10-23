@@ -57,6 +57,8 @@ public class CloudSystem {
     private final Map<MessageType, String> messages;
     private final Map<PlaceholderType, String> placeholders = new HashMap<>();
 
+    private final Map<String, String> variables = new HashMap<>();
+
     public CloudSystem() {
         this.messages = Arrays.stream(MessageType.values()).collect(Collectors.toMap(Function.identity(), MessageType::getDefaultMessage));
     }
@@ -282,4 +284,7 @@ public class CloudSystem {
         return this.applicationFiles;
     }
 
+    public Map<String, String> getVariables() {
+        return this.variables;
+    }
 }

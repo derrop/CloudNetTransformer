@@ -8,7 +8,9 @@ import com.github.derrop.cloudnettransformer.cloud.executor.annotation.ExecutorT
 import com.github.derrop.cloudnettransformer.util.HttpHelper;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 @DescribedCloudExecutor(name = "", types = ExecutorType.WRITE)
 public class FileDownloaderExecutor implements CloudExecutor {
@@ -40,8 +42,15 @@ public class FileDownloaderExecutor implements CloudExecutor {
         return this.path;
     }
 
-    protected boolean downloadFile(Path directory) throws IOException {
-        return HttpHelper.download(this.url, directory.resolve(this.path));
+    protected boolean downloadFile(CloudSystem cloudSystem, Path directory) throws IOException {
+        String url = this.url;
+        for (Map.Entry<String, String> entry : cloudSystem.getVariables().entrySet()) {
+            url = url.replace(entry.getKey(), entry.getValue());
+        }
+
+        Path path = directory.resolve(this.path);
+        Files.createDirectories(path.getParent());
+        return HttpHelper.download(url, path);
     }
 
     @Override
@@ -49,6 +58,6 @@ public class FileDownloaderExecutor implements CloudExecutor {
         if (type != ExecutorType.WRITE) {
             return ExecuteResult.success();
         }
-        return ExecuteResult.of(this.downloadFile(directory));
+        return ExecuteResult.of(this.downloadFile(cloudSystem, directory));
     }
 }
